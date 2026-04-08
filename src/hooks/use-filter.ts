@@ -35,29 +35,49 @@ function matchesAny(text: string, keywords: string[]): boolean {
 export function useFilter(): UseFilterReturn {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<StatusFilter>("予定");
-  const [teslaOnly, setTeslaOnly] = useState(false);
+  const [teslaOnly, setTeslaOnlyRaw] = useState(false);
   const [carCarrierOnly, setCarCarrierOnly] = useState(true);
   const [shanghaiOrigin, setShanghaiOrigin] = useState(false);
   const [nagoyaRoute, setNagoyaRoute] = useState(false);
 
+  // Tesla ON → force all prerequisite filters ON
+  const setTeslaOnly = useCallback((value: boolean) => {
+    setTeslaOnlyRaw(value);
+    if (value) {
+      setCarCarrierOnly(true);
+      setShanghaiOrigin(true);
+      setNagoyaRoute(true);
+    }
+  }, []);
+
+  // Effective filters: when Tesla is ON, prerequisites are forced
+  const effectiveCarCarrier = teslaOnly || carCarrierOnly;
+  const effectiveShanghai = teslaOnly || shanghaiOrigin;
+  const effectiveNagoya = teslaOnly || nagoyaRoute;
+
   const filters = useMemo<Filters>(
-    () => ({ search, status, teslaOnly, carCarrierOnly, shanghaiOrigin, nagoyaRoute }),
-    [search, status, teslaOnly, carCarrierOnly, shanghaiOrigin, nagoyaRoute],
+    () => ({
+      search, status, teslaOnly,
+      carCarrierOnly: effectiveCarCarrier,
+      shanghaiOrigin: effectiveShanghai,
+      nagoyaRoute: effectiveNagoya,
+    }),
+    [search, status, teslaOnly, effectiveCarCarrier, effectiveShanghai, effectiveNagoya],
   );
 
   const applyFilters = useCallback(
     (ships: Ship[]): Ship[] => {
       let result = ships;
 
-      if (carCarrierOnly) {
+      if (effectiveCarCarrier) {
         result = result.filter((s) => s.vesselType === "自動車専用船");
       }
 
-      if (shanghaiOrigin) {
+      if (effectiveShanghai) {
         result = result.filter((s) => matchesAny(s.originPort, SHANGHAI_KEYWORDS));
       }
 
-      if (nagoyaRoute) {
+      if (effectiveNagoya) {
         result = result.filter((s) =>
           matchesAny(s.previousPort, NAGOYA_KEYWORDS) ||
           matchesAny(s.nextPort, NAGOYA_KEYWORDS) ||
@@ -84,7 +104,7 @@ export function useFilter(): UseFilterReturn {
 
       return result;
     },
-    [search, status, teslaOnly, carCarrierOnly, shanghaiOrigin, nagoyaRoute],
+    [search, status, teslaOnly, effectiveCarCarrier, effectiveShanghai, effectiveNagoya],
   );
 
   return {

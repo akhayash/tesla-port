@@ -4,6 +4,7 @@ import {
   ArrowUp,
   ArrowUpDown,
   Zap,
+  Filter,
 } from "lucide-react";
 import {
   Table,
@@ -13,10 +14,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Ship } from "@/lib/types";
+import type { StatusFilter } from "@/hooks/use-filter";
 
 type SortKey =
   | "name"
@@ -73,26 +83,54 @@ function getSortValue(ship: Ship, key: SortKey): string | number | boolean {
   }
 }
 
-interface ShipTableProps {
-  ships: Ship[];
+// Collect unique values for dropdown filters
+function uniqueValues(ships: Ship[], getter: (s: Ship) => string): string[] {
+  const set = new Set<string>();
+  for (const s of ships) {
+    const v = getter(s).trim();
+    if (v) set.add(v);
+  }
+  return Array.from(set).sort();
 }
 
-const columns: { key: SortKey; label: string }[] = [
-  { key: "name", label: "船名" },
-  { key: "vesselType", label: "船種" },
-  { key: "status", label: "ステータス" },
-  { key: "arrival", label: "入港予定" },
-  { key: "departure", label: "離岸予定" },
-  { key: "prevPort", label: "前港" },
-  { key: "nextPort", label: "次港" },
-  { key: "originPort", label: "仕出港" },
-  { key: "destPort", label: "仕向港" },
-  { key: "tesla", label: "Tesla" },
+interface ShipTableProps {
+  ships: Ship[];
+  allShips: Ship[];
+  filters: {
+    status: StatusFilter;
+    carCarrierOnly: boolean;
+    shanghaiOrigin: boolean;
+    nagoyaRoute: boolean;
+    teslaOnly: boolean;
+  };
+  onStatusChange: (v: StatusFilter) => void;
+  onCarCarrierOnlyChange: (v: boolean) => void;
+  onShanghaiOriginChange: (v: boolean) => void;
+  onNagoyaRouteChange: (v: boolean) => void;
+  onTeslaOnlyChange: (v: boolean) => void;
+}
+
+const statusOptions: { value: StatusFilter; label: string }[] = [
+  { value: "all", label: "全て" },
+  { value: "予定", label: "予定" },
+  { value: "決定", label: "決定" },
+  { value: "実績", label: "実績" },
 ];
 
-export function ShipTable({ ships }: ShipTableProps) {
+export function ShipTable({
+  ships,
+  allShips,
+  filters,
+  onStatusChange,
+  onCarCarrierOnlyChange,
+  onShanghaiOriginChange,
+  onNagoyaRouteChange,
+  onTeslaOnlyChange,
+}: ShipTableProps) {
   const [sortKey, setSortKey] = useState<SortKey>("arrival");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
+
+  const vesselTypes = useMemo(() => uniqueValues(allShips, (s) => s.vesselType), [allShips]);
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -125,28 +163,128 @@ export function ShipTable({ ships }: ShipTableProps) {
     );
   };
 
+  void vesselTypes;
+
   return (
     <Table>
       <TableHeader>
+        {/* Column labels */}
         <TableRow>
-          {columns.map((col) => (
-            <TableHead
-              key={col.key}
-              className="cursor-pointer select-none"
-              onClick={() => handleSort(col.key)}
+          <TableHead className="cursor-pointer select-none" onClick={() => handleSort("name")}>
+            <span className="inline-flex items-center gap-1">船名 <SortIcon col="name" /></span>
+          </TableHead>
+          <TableHead className="cursor-pointer select-none" onClick={() => handleSort("vesselType")}>
+            <span className="inline-flex items-center gap-1">船種 <SortIcon col="vesselType" /></span>
+          </TableHead>
+          <TableHead className="cursor-pointer select-none" onClick={() => handleSort("status")}>
+            <span className="inline-flex items-center gap-1">ステータス <SortIcon col="status" /></span>
+          </TableHead>
+          <TableHead className="cursor-pointer select-none" onClick={() => handleSort("arrival")}>
+            <span className="inline-flex items-center gap-1">入港予定 <SortIcon col="arrival" /></span>
+          </TableHead>
+          <TableHead className="cursor-pointer select-none" onClick={() => handleSort("departure")}>
+            <span className="inline-flex items-center gap-1">離岸予定 <SortIcon col="departure" /></span>
+          </TableHead>
+          <TableHead className="cursor-pointer select-none" onClick={() => handleSort("prevPort")}>
+            <span className="inline-flex items-center gap-1">前港 <SortIcon col="prevPort" /></span>
+          </TableHead>
+          <TableHead className="cursor-pointer select-none" onClick={() => handleSort("nextPort")}>
+            <span className="inline-flex items-center gap-1">次港 <SortIcon col="nextPort" /></span>
+          </TableHead>
+          <TableHead className="cursor-pointer select-none" onClick={() => handleSort("originPort")}>
+            <span className="inline-flex items-center gap-1">仕出港 <SortIcon col="originPort" /></span>
+          </TableHead>
+          <TableHead className="cursor-pointer select-none" onClick={() => handleSort("destPort")}>
+            <span className="inline-flex items-center gap-1">仕向港 <SortIcon col="destPort" /></span>
+          </TableHead>
+          <TableHead className="cursor-pointer select-none" onClick={() => handleSort("tesla")}>
+            <span className="inline-flex items-center gap-1">Tesla <SortIcon col="tesla" /></span>
+          </TableHead>
+        </TableRow>
+        {/* Filter row */}
+        <TableRow className="bg-muted/30 hover:bg-muted/30">
+          <TableHead />
+          <TableHead>
+            <Select
+              value={filters.carCarrierOnly ? "自動車専用船" : "all"}
+              onValueChange={(v) => onCarCarrierOnlyChange(v === "自動車専用船")}
             >
-              <span className="inline-flex items-center gap-1">
-                {col.label}
-                <SortIcon col={col.key} />
-              </span>
-            </TableHead>
-          ))}
+              <SelectTrigger className="h-7 w-full text-[10px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">全て</SelectItem>
+                <SelectItem value="自動車専用船">自動車専用船</SelectItem>
+              </SelectContent>
+            </Select>
+          </TableHead>
+          <TableHead>
+            <Select
+              value={filters.status}
+              onValueChange={(v) => onStatusChange(v as StatusFilter)}
+            >
+              <SelectTrigger className="h-7 w-full text-[10px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {statusOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </TableHead>
+          <TableHead />
+          <TableHead />
+          <TableHead />
+          <TableHead />
+          <TableHead>
+            <Button
+              variant={filters.shanghaiOrigin ? "default" : "ghost"}
+              size="sm"
+              className={cn(
+                "h-7 w-full text-[10px]",
+                filters.shanghaiOrigin && "bg-amber-600 text-white hover:bg-amber-700",
+              )}
+              onClick={() => onShanghaiOriginChange(!filters.shanghaiOrigin)}
+            >
+              <Filter className="size-3" />
+              上海
+            </Button>
+          </TableHead>
+          <TableHead>
+            <Button
+              variant={filters.nagoyaRoute ? "default" : "ghost"}
+              size="sm"
+              className={cn(
+                "h-7 w-full text-[10px]",
+                filters.nagoyaRoute && "bg-emerald-600 text-white hover:bg-emerald-700",
+              )}
+              onClick={() => onNagoyaRouteChange(!filters.nagoyaRoute)}
+            >
+              <Filter className="size-3" />
+              名古屋
+            </Button>
+          </TableHead>
+          <TableHead>
+            <Button
+              variant={filters.teslaOnly ? "default" : "ghost"}
+              size="sm"
+              className={cn(
+                "h-7 w-full text-[10px]",
+                filters.teslaOnly && "bg-red-600 text-white hover:bg-red-700",
+              )}
+              onClick={() => onTeslaOnlyChange(!filters.teslaOnly)}
+            >
+              <Zap className="size-3" />
+              のみ
+            </Button>
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {sorted.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={columns.length} className="py-8 text-center text-muted-foreground">
+            <TableCell colSpan={10} className="py-8 text-center text-muted-foreground">
               該当する船舶がありません
             </TableCell>
           </TableRow>

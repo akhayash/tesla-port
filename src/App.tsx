@@ -62,19 +62,9 @@ function App() {
 
             <FilterBar
               search={filters.search}
-              status={filters.status}
-              teslaOnly={filters.teslaOnly}
-              carCarrierOnly={filters.carCarrierOnly}
-              shanghaiOrigin={filters.shanghaiOrigin}
-              nagoyaRoute={filters.nagoyaRoute}
               totalCount={ships.length}
               filteredCount={filtered.length}
               onSearchChange={setSearch}
-              onStatusChange={setStatus}
-              onTeslaOnlyChange={setTeslaOnly}
-              onCarCarrierOnlyChange={setCarCarrierOnly}
-              onShanghaiOriginChange={setShanghaiOrigin}
-              onNagoyaRouteChange={setNagoyaRoute}
             />
 
             {/* Mobile: cards */}
@@ -92,7 +82,16 @@ function App() {
 
             {/* Desktop: table */}
             <div className="hidden md:block">
-              <ShipTable ships={filtered} />
+              <ShipTable
+                ships={filtered}
+                allShips={ships}
+                filters={filters}
+                onStatusChange={setStatus}
+                onCarCarrierOnlyChange={setCarCarrierOnly}
+                onShanghaiOriginChange={setShanghaiOrigin}
+                onNagoyaRouteChange={setNagoyaRoute}
+                onTeslaOnlyChange={setTeslaOnly}
+              />
             </div>
           </>
         )}
