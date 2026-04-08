@@ -1,5 +1,5 @@
 {
-  "scrapedAt": "2026-04-08T13:23:41.046Z",
+  "scrapedAt": "2026-04-08T13:26:23.279Z",
   "source": "http://www.port.city.yokohama.jp/APP/Pves0040InPlanC",
   "ships": [
     {
@@ -3825,7 +3825,7 @@
       "nextPort": "TAIPEI",
       "originPort": "リエンユンカン（連雲港）",
       "destinationPort": "名古屋",
-      "isTeslaCandidate": true
+      "isTeslaCandidate": false
     },
     {
       "callSign": "JNNU",

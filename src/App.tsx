@@ -29,8 +29,11 @@ function LoadingSkeleton() {
 
 function App() {
   const { ships, scrapedAt, isLoading, error, retry } = useShips();
-  const { filters, setSearch, setStatus, setTeslaOnly, applyFilters } =
-    useFilter();
+  const {
+    filters, setSearch, setStatus, setTeslaOnly,
+    setCarCarrierOnly, setShanghaiOrigin, setNagoyaRoute,
+    applyFilters,
+  } = useFilter();
 
   const filtered = useMemo(
     () => applyFilters(ships),
@@ -61,14 +64,18 @@ function App() {
               search={filters.search}
               status={filters.status}
               teslaOnly={filters.teslaOnly}
+              carCarrierOnly={filters.carCarrierOnly}
+              shanghaiOrigin={filters.shanghaiOrigin}
+              nagoyaRoute={filters.nagoyaRoute}
+              totalCount={ships.length}
+              filteredCount={filtered.length}
               onSearchChange={setSearch}
               onStatusChange={setStatus}
               onTeslaOnlyChange={setTeslaOnly}
+              onCarCarrierOnlyChange={setCarCarrierOnly}
+              onShanghaiOriginChange={setShanghaiOrigin}
+              onNagoyaRouteChange={setNagoyaRoute}
             />
-
-            <p className="text-xs text-muted-foreground">
-              {filtered.length} 件表示 / 全 {ships.length} 件
-            </p>
 
             {/* Mobile: cards */}
             <div className="grid gap-3 md:hidden">

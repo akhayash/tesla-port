@@ -5,7 +5,7 @@
     { "name": "TRANS FUTURE 7", "callSign": "", "notes": "Car carrier on Shanghai-Japan route" }
   ],
   "routePatterns": {
-    "originPorts": ["上海", "SHANGHAI", "連雲港", "LIANYUNGANG", "太倉", "TAICANG", "南通", "NANTONG"],
+    "originPorts": ["上海", "SHANGHAI", "シャンハイ"],
     "adjacentPorts": ["名古屋", "NAGOYA", "神戸", "KOBE", "三河", "MIKAWA", "広島", "HIROSHIMA"]
   }
 }
