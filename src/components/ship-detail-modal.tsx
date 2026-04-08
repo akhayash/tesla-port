@@ -1,5 +1,6 @@
-import { useEffect } from "react";
-import { X, Zap, ArrowRight } from "lucide-react";
+import { useEffect, useRef, useCallback, useState } from "react";
+import { X, Zap, ArrowRight, Copy, Image, Check, Link } from "lucide-react";
+import { toPng } from "html-to-image";
 import { StatusBadge } from "@/components/status-badge";
 import type { Ship } from "@/lib/types";
 
@@ -23,7 +24,40 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
+function shipToText(ship: Ship): string {
+  const lines = [
+    `🚢 ${ship.name}${ship.isTeslaCandidate ? " ⚡Tesla候補" : ""}`,
+    `ステータス: ${ship.status} / ${ship.operationStatus}`,
+    `コールサイン: ${ship.callSign}`,
+    "",
+    `【航路】 ${ship.previousPort || "—"} → 横浜 → ${ship.nextPort || "—"}`,
+    `仕出港: ${ship.originPort || "—"}`,
+    `仕向港: ${ship.destinationPort || "—"}`,
+    "",
+    `【船舶情報】`,
+    `船種: ${ship.vesselType || "—"}`,
+    `国籍: ${ship.nationality || "—"}`,
+    `総トン数: ${ship.grossTonnage ? ship.grossTonnage.toLocaleString() + " t" : "—"}`,
+    `全長: ${ship.length ? ship.length + " m" : "—"}`,
+    `代理店: ${ship.agent || "—"}`,
+    `バース: ${ship.berth || "—"}`,
+    "",
+    `【入出港情報】`,
+    `入港予定: ${fmt(ship.scheduledArrival)}`,
+    `離岸予定: ${fmt(ship.scheduledDeparture)}`,
+    `着岸確定: ${fmt(ship.confirmedArrival)}`,
+    `離岸確定: ${fmt(ship.confirmedDeparture)}`,
+    `着岸実績: ${fmt(ship.actualArrival)}`,
+    `離岸実績: ${fmt(ship.actualDeparture)}`,
+  ];
+  return lines.join("\n");
+}
+
 export function ShipDetailModal({ ship, onClose }: ShipDetailModalProps) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [copiedText, setCopiedText] = useState(false);
+  const [copiedImage, setCopiedImage] = useState(false);
+
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -32,12 +66,56 @@ export function ShipDetailModal({ ship, onClose }: ShipDetailModalProps) {
     return () => document.removeEventListener("keydown", handleKey);
   }, [onClose]);
 
+  const [copiedLink, setCopiedLink] = useState(false);
+
+  const handleCopyText = useCallback(async () => {
+    await navigator.clipboard.writeText(shipToText(ship));
+    setCopiedText(true);
+    setTimeout(() => setCopiedText(false), 2000);
+  }, [ship]);
+
+  const handleCopyLink = useCallback(async () => {
+    const id = ship.callSign || encodeURIComponent(ship.name);
+    const url = `${window.location.origin}${window.location.pathname}#${id}`;
+    await navigator.clipboard.writeText(url);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
+  }, [ship]);
+
+  const handleCopyImage = useCallback(async () => {
+    if (!cardRef.current) return;
+    try {
+      const dataUrl = await toPng(cardRef.current, {
+        backgroundColor: "#1c1c22",
+        pixelRatio: 2,
+      });
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      await navigator.clipboard.write([
+        new ClipboardItem({ "image/png": blob }),
+      ]);
+      setCopiedImage(true);
+      setTimeout(() => setCopiedImage(false), 2000);
+    } catch {
+      // Fallback: download as file
+      const dataUrl = await toPng(cardRef.current, {
+        backgroundColor: "#1c1c22",
+        pixelRatio: 2,
+      });
+      const link = document.createElement("a");
+      link.download = `${ship.name}.png`;
+      link.href = dataUrl;
+      link.click();
+    }
+  }, [ship]);
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
       onClick={onClose}
     >
       <div
+        ref={cardRef}
         className="w-full max-w-lg rounded-lg border border-border bg-card text-card-foreground shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
@@ -60,12 +138,35 @@ export function ShipDetailModal({ ship, onClose }: ShipDetailModalProps) {
               </span>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="rounded-md p-1 text-muted-foreground hover:bg-muted"
-          >
-            <X className="size-5" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={handleCopyLink}
+              className="rounded-md p-1.5 text-muted-foreground hover:bg-muted"
+              title="リンクをコピー"
+            >
+              {copiedLink ? <Check className="size-4 text-green-500" /> : <Link className="size-4" />}
+            </button>
+            <button
+              onClick={handleCopyText}
+              className="rounded-md p-1.5 text-muted-foreground hover:bg-muted"
+              title="テキストをコピー"
+            >
+              {copiedText ? <Check className="size-4 text-green-500" /> : <Copy className="size-4" />}
+            </button>
+            <button
+              onClick={handleCopyImage}
+              className="rounded-md p-1.5 text-muted-foreground hover:bg-muted"
+              title="画像をコピー"
+            >
+              {copiedImage ? <Check className="size-4 text-green-500" /> : <Image className="size-4" />}
+            </button>
+            <button
+              onClick={onClose}
+              className="rounded-md p-1.5 text-muted-foreground hover:bg-muted"
+            >
+              <X className="size-4" />
+            </button>
+          </div>
         </div>
 
         {/* Route visualization */}

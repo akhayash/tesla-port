@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -11,7 +11,8 @@ import {
   type Header,
   type FilterFn,
 } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ArrowUpDown, Zap } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, Zap, Copy, Image, Check } from "lucide-react";
+import { toPng } from "html-to-image";
 import {
   Table,
   TableBody,
@@ -68,6 +69,31 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
     { id: "isTeslaCandidate", value: true },
   ]);
   const [selectedShip, setSelectedShip] = useState<Ship | null>(null);
+  const [copiedText, setCopiedText] = useState(false);
+  const [copiedImage, setCopiedImage] = useState(false);
+  const tableRef = useRef<HTMLDivElement>(null);
+
+  // Permalink: open modal from URL hash on mount
+  useEffect(() => {
+    const hash = window.location.hash.replace("#", "");
+    if (hash && ships.length > 0) {
+      const match = ships.find(
+        (s) => s.callSign === hash || s.name === decodeURIComponent(hash),
+      );
+      if (match) setSelectedShip(match);
+    }
+  }, [ships]);
+
+  // Update URL hash when modal opens/closes
+  const openShip = useCallback((ship: Ship) => {
+    setSelectedShip(ship);
+    window.history.replaceState(null, "", `#${ship.callSign || encodeURIComponent(ship.name)}`);
+  }, []);
+
+  const closeShip = useCallback(() => {
+    setSelectedShip(null);
+    window.history.replaceState(null, "", window.location.pathname + window.location.search);
+  }, []);
 
   const vesselTypes = useMemo(() => unique(allShips, (s) => s.vesselType), [allShips]);
   const statuses = useMemo(() => unique(allShips, (s) => s.status), [allShips]);
@@ -167,14 +193,75 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
     destinationPort: { title: "仕向港", options: destPorts },
   };
 
+  const handleCopyText = useCallback(() => {
+    const rows = table.getFilteredRowModel().rows;
+    const header = "船名\t船種\tステータス\t入港予定\t離岸予定\t前港\t次港\t仕出港\t仕向港\tTesla";
+    const lines = rows.map((r) => {
+      const s = r.original;
+      return [
+        s.name, s.vesselType, s.status,
+        fmt(arrival(s)), fmt(departure(s)),
+        s.previousPort, s.nextPort, s.originPort, s.destinationPort,
+        s.isTeslaCandidate ? "⚡" : "",
+      ].join("\t");
+    });
+    navigator.clipboard.writeText([header, ...lines].join("\n"));
+    setCopiedText(true);
+    setTimeout(() => setCopiedText(false), 2000);
+  }, [table]);
+
+  const handleCopyImage = useCallback(async () => {
+    if (!tableRef.current) return;
+    try {
+      const dataUrl = await toPng(tableRef.current, {
+        backgroundColor: "#1c1c22",
+        pixelRatio: 2,
+      });
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      await navigator.clipboard.write([
+        new ClipboardItem({ "image/png": blob }),
+      ]);
+      setCopiedImage(true);
+      setTimeout(() => setCopiedImage(false), 2000);
+    } catch {
+      const dataUrl = await toPng(tableRef.current, {
+        backgroundColor: "#1c1c22",
+        pixelRatio: 2,
+      });
+      const link = document.createElement("a");
+      link.download = "tesla-port-table.png";
+      link.href = dataUrl;
+      link.click();
+    }
+  }, []);
+
   return (
     <div className="space-y-2">
-      <p className="text-right text-xs text-muted-foreground">
-        {filtered === total
-          ? `${total}隻`
-          : `${filtered} / ${total}隻`}
-      </p>
-      <div className="overflow-x-auto rounded-md border">
+      <div className="flex items-center justify-end gap-2">
+        <button
+          onClick={handleCopyText}
+          className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs text-muted-foreground hover:bg-muted"
+          title="表示中のデータをテキストコピー"
+        >
+          {copiedText ? <Check className="size-3 text-green-500" /> : <Copy className="size-3" />}
+          テキスト
+        </button>
+        <button
+          onClick={handleCopyImage}
+          className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs text-muted-foreground hover:bg-muted"
+          title="表示中のテーブルを画像コピー"
+        >
+          {copiedImage ? <Check className="size-3 text-green-500" /> : <Image className="size-3" />}
+          画像
+        </button>
+        <span className="text-xs text-muted-foreground">
+          {filtered === total
+            ? `${total}隻`
+            : `${filtered} / ${total}隻`}
+        </span>
+      </div>
+      <div ref={tableRef} className="overflow-x-auto rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((hg) => (
@@ -235,7 +322,7 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
                     "cursor-pointer",
                     row.original.isTeslaCandidate && "bg-red-500/5",
                   )}
-                  onClick={() => setSelectedShip(row.original)}
+                  onClick={() => openShip(row.original)}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
@@ -257,7 +344,7 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
       {selectedShip && (
         <ShipDetailModal
           ship={selectedShip}
-          onClose={() => setSelectedShip(null)}
+          onClose={closeShip}
         />
       )}
     </div>
