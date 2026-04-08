@@ -1,5 +1,5 @@
 {
-  "scrapedAt": "2026-04-08T13:21:01.259Z",
+  "scrapedAt": "2026-04-08T13:23:41.046Z",
   "source": "http://www.port.city.yokohama.jp/APP/Pves0040InPlanC",
   "ships": [
     {
@@ -4100,7 +4100,7 @@
       "nextPort": "BATANGAS",
       "originPort": "シャンハイ（上海）",
       "destinationPort": "バタンガス",
-      "isTeslaCandidate": true
+      "isTeslaCandidate": false
     },
     {
       "callSign": "7JBI",

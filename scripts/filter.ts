@@ -41,17 +41,17 @@ function matchesPorts(ports: string[], patterns: string[]): boolean {
 function isRouteMatch(ship: Ship, data: KnownTeslaShipsData): boolean {
   const { originPorts, adjacentPorts } = data.routePatterns;
 
-  const shipPorts = [ship.previousPort, ship.nextPort, ship.originPort, ship.destinationPort];
-  const originMatch = matchesPorts(shipPorts, originPorts);
-  const adjacentMatch = matchesPorts(shipPorts, adjacentPorts);
+  // Origin port must match Chinese Tesla export ports
+  const originMatch = matchesPorts([ship.originPort], originPorts);
+  if (!originMatch) return false;
 
-  // Origin/destination port matches Chinese Tesla ports
-  if (matchesPorts([ship.originPort], originPorts)) return true;
+  // AND previous/next/destination port must include a known adjacent Japanese port (e.g. Nagoya)
+  const adjacentMatch = matchesPorts(
+    [ship.previousPort, ship.nextPort, ship.destinationPort],
+    adjacentPorts
+  );
 
-  // Previous port is a known origin AND next port is an adjacent Japanese port (or vice versa)
-  if (originMatch && adjacentMatch) return true;
-
-  return false;
+  return adjacentMatch;
 }
 
 /** Determine if a ship is a Tesla candidate. */
