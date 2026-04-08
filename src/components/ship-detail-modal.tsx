@@ -69,26 +69,34 @@ export function ShipDetailModal({ ship, onClose }: ShipDetailModalProps) {
   const [copiedLink, setCopiedLink] = useState(false);
 
   const handleCopyText = useCallback(async () => {
-    await navigator.clipboard.writeText(shipToText(ship));
-    setCopiedText(true);
-    setTimeout(() => setCopiedText(false), 2000);
+    try {
+      await navigator.clipboard.writeText(shipToText(ship));
+      setCopiedText(true);
+      setTimeout(() => setCopiedText(false), 2000);
+    } catch {
+      // silently fail
+    }
   }, [ship]);
 
   const handleCopyLink = useCallback(async () => {
-    const id = ship.callSign || encodeURIComponent(ship.name);
-    const url = `${window.location.origin}${window.location.pathname}#${id}`;
-    await navigator.clipboard.writeText(url);
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2000);
+    try {
+      const id = ship.callSign || encodeURIComponent(ship.name);
+      const url = `${window.location.origin}${window.location.pathname}#${id}`;
+      await navigator.clipboard.writeText(url);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
+    } catch {
+      // silently fail
+    }
   }, [ship]);
 
   const handleCopyImage = useCallback(async () => {
     if (!cardRef.current) return;
+    const dataUrl = await toPng(cardRef.current, {
+      backgroundColor: "#1c1c22",
+      pixelRatio: 2,
+    });
     try {
-      const dataUrl = await toPng(cardRef.current, {
-        backgroundColor: "#1c1c22",
-        pixelRatio: 2,
-      });
       const res = await fetch(dataUrl);
       const blob = await res.blob();
       await navigator.clipboard.write([
@@ -98,10 +106,6 @@ export function ShipDetailModal({ ship, onClose }: ShipDetailModalProps) {
       setTimeout(() => setCopiedImage(false), 2000);
     } catch {
       // Fallback: download as file
-      const dataUrl = await toPng(cardRef.current, {
-        backgroundColor: "#1c1c22",
-        pixelRatio: 2,
-      });
       const link = document.createElement("a");
       link.download = `${ship.name}.png`;
       link.href = dataUrl;

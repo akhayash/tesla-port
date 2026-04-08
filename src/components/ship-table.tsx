@@ -193,30 +193,34 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
     destinationPort: { title: "仕向港", options: destPorts },
   };
 
-  const handleCopyText = useCallback(() => {
-    const rows = table.getFilteredRowModel().rows;
-    const header = "船名\t船種\tステータス\t入港予定\t離岸予定\t前港\t次港\t仕出港\t仕向港\tTesla";
-    const lines = rows.map((r) => {
-      const s = r.original;
-      return [
-        s.name, s.vesselType, s.status,
-        fmt(arrival(s)), fmt(departure(s)),
-        s.previousPort, s.nextPort, s.originPort, s.destinationPort,
-        s.isTeslaCandidate ? "⚡" : "",
-      ].join("\t");
-    });
-    navigator.clipboard.writeText([header, ...lines].join("\n"));
-    setCopiedText(true);
-    setTimeout(() => setCopiedText(false), 2000);
+  const handleCopyText = useCallback(async () => {
+    try {
+      const rows = table.getFilteredRowModel().rows;
+      const header = "船名\t船種\tステータス\t入港予定\t離岸予定\t前港\t次港\t仕出港\t仕向港\tTesla";
+      const lines = rows.map((r) => {
+        const s = r.original;
+        return [
+          s.name, s.vesselType, s.status,
+          fmt(arrival(s)), fmt(departure(s)),
+          s.previousPort, s.nextPort, s.originPort, s.destinationPort,
+          s.isTeslaCandidate ? "⚡" : "",
+        ].join("\t");
+      });
+      await navigator.clipboard.writeText([header, ...lines].join("\n"));
+      setCopiedText(true);
+      setTimeout(() => setCopiedText(false), 2000);
+    } catch {
+      // silently fail
+    }
   }, [table]);
 
   const handleCopyImage = useCallback(async () => {
     if (!tableRef.current) return;
+    const dataUrl = await toPng(tableRef.current, {
+      backgroundColor: "#1c1c22",
+      pixelRatio: 2,
+    });
     try {
-      const dataUrl = await toPng(tableRef.current, {
-        backgroundColor: "#1c1c22",
-        pixelRatio: 2,
-      });
       const res = await fetch(dataUrl);
       const blob = await res.blob();
       await navigator.clipboard.write([
@@ -225,10 +229,6 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
       setCopiedImage(true);
       setTimeout(() => setCopiedImage(false), 2000);
     } catch {
-      const dataUrl = await toPng(tableRef.current, {
-        backgroundColor: "#1c1c22",
-        pixelRatio: 2,
-      });
       const link = document.createElement("a");
       link.download = "tesla-port-table.png";
       link.href = dataUrl;
