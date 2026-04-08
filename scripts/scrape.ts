@@ -8,9 +8,13 @@ import type { ShipData } from "../src/lib/types.ts";
 const TARGET_URL = "http://www.port.city.yokohama.jp/APP/Pves0040InPlanC";
 
 const FORM_PARAMS: Record<string, string> = {
+  hid_sessionid: "",
   hid_gamenid: "Jyoho04",
+  hid_userid: "",
   cbo_cberth: "",
-  "txt_cetay/m/d": "",
+  txt_cetay: "",
+  txt_cetam: "",
+  txt_cetad: "",
   cbo_status: "",
   txt_callsign: "",
   txt_vesselname: "",
@@ -45,10 +49,27 @@ async function fetchPage(): Promise<string> {
     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
   }
 
-  // Response is Shift_JIS encoded — read as raw bytes and decode
+  // Server declares X-SJIS in HTML meta but actually sends UTF-8
+  const contentType = response.headers.get("content-type") ?? "";
   const buffer = Buffer.from(await response.arrayBuffer());
-  const html = iconv.decode(buffer, "Shift_JIS");
-  console.log(`[scrape] Received ${buffer.length} bytes, decoded ${html.length} chars`);
+  let html: string;
+
+  if (contentType.toLowerCase().includes("utf-8")) {
+    html = buffer.toString("utf-8");
+  } else {
+    // Fallback: try Shift_JIS decoding
+    html = iconv.decode(buffer, "Shift_JIS");
+  }
+
+  // Verify we got valid Japanese text
+  if (!html.includes("入出港予定船情報照会")) {
+    // Try the other encoding
+    html = html === buffer.toString("utf-8")
+      ? iconv.decode(buffer, "Shift_JIS")
+      : buffer.toString("utf-8");
+  }
+
+  console.log(`[scrape] Received ${buffer.length} bytes, decoded ${html.length} chars (${contentType})`);
   return html;
 }
 
