@@ -9,6 +9,7 @@ import {
   type ColumnFiltersState,
   type SortingState,
   type Header,
+  type FilterFn,
 } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown, Zap } from "lucide-react";
 import {
@@ -19,15 +20,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/components/status-badge";
+import { FacetedFilter } from "@/components/faceted-filter";
+import { ShipDetailModal } from "@/components/ship-detail-modal";
 import { cn } from "@/lib/utils";
 import type { Ship } from "@/lib/types";
 
@@ -40,15 +36,24 @@ function fmt(raw: string | null): string {
 function arrival(s: Ship) {
   return s.actualArrival ?? s.confirmedArrival ?? s.scheduledArrival;
 }
+
 function departure(s: Ship) {
   return s.actualDeparture ?? s.confirmedDeparture ?? s.scheduledDeparture;
 }
 
 function unique(ships: Ship[], get: (s: Ship) => string) {
-  return Array.from(new Set(ships.map(get).map((v) => v.trim()).filter(Boolean))).sort();
+  return Array.from(
+    new Set(ships.map(get).map((v) => v.trim()).filter(Boolean)),
+  ).sort();
 }
 
-const col = createColumnHelper<Ship>();
+const multiSelectFilter: FilterFn<Ship> = (row, columnId, filterValue: Set<string>) => {
+  if (!filterValue || filterValue.size === 0) return true;
+  const cellValue = String(row.getValue(columnId)).trim();
+  return filterValue.has(cellValue);
+};
+
+const helper = createColumnHelper<Ship>();
 
 interface ShipTableProps {
   ships: Ship[];
@@ -60,67 +65,79 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
     { id: "arrival", desc: false },
   ]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
-    { id: "vesselType", value: "自動車専用船" },
-    { id: "status", value: "予定" },
+    { id: "isTeslaCandidate", value: true },
   ]);
+  const [selectedShip, setSelectedShip] = useState<Ship | null>(null);
 
   const vesselTypes = useMemo(() => unique(allShips, (s) => s.vesselType), [allShips]);
   const statuses = useMemo(() => unique(allShips, (s) => s.status), [allShips]);
+  const prevPorts = useMemo(() => unique(allShips, (s) => s.previousPort), [allShips]);
+  const nextPorts = useMemo(() => unique(allShips, (s) => s.nextPort), [allShips]);
+  const originPorts = useMemo(() => unique(allShips, (s) => s.originPort), [allShips]);
+  const destPorts = useMemo(() => unique(allShips, (s) => s.destinationPort), [allShips]);
 
   const columns = useMemo(
     () => [
-      col.accessor("name", {
+      helper.accessor("name", {
         header: "船名",
         cell: (i) => i.getValue(),
         filterFn: "includesString",
       }),
-      col.accessor("vesselType", {
+      helper.accessor("vesselType", {
         header: "船種",
         cell: (i) => i.getValue() || "—",
-        filterFn: "equals",
+        filterFn: multiSelectFilter,
       }),
-      col.accessor("status", {
+      helper.accessor("status", {
         header: "ステータス",
         cell: (i) => (
-          <StatusBadge status={i.getValue()} operationStatus={i.row.original.operationStatus} />
+          <StatusBadge
+            status={i.getValue()}
+            operationStatus={i.row.original.operationStatus}
+          />
         ),
-        filterFn: "equals",
+        filterFn: multiSelectFilter,
       }),
-      col.accessor((r) => arrival(r), {
+      helper.accessor((r) => arrival(r), {
         id: "arrival",
         header: "入港予定",
         cell: (i) => <span className="tabular-nums">{fmt(i.getValue())}</span>,
+        filterFn: "includesString",
       }),
-      col.accessor((r) => departure(r), {
+      helper.accessor((r) => departure(r), {
         id: "departure",
         header: "離岸予定",
         cell: (i) => <span className="tabular-nums">{fmt(i.getValue())}</span>,
+        filterFn: "includesString",
       }),
-      col.accessor("previousPort", {
+      helper.accessor("previousPort", {
         header: "前港",
         cell: (i) => i.getValue() || "—",
-        filterFn: "includesString",
+        filterFn: multiSelectFilter,
       }),
-      col.accessor("nextPort", {
+      helper.accessor("nextPort", {
         header: "次港",
         cell: (i) => i.getValue() || "—",
-        filterFn: "includesString",
+        filterFn: multiSelectFilter,
       }),
-      col.accessor("originPort", {
+      helper.accessor("originPort", {
         header: "仕出港",
         cell: (i) => i.getValue() || "—",
-        filterFn: "includesString",
+        filterFn: multiSelectFilter,
       }),
-      col.accessor("destinationPort", {
+      helper.accessor("destinationPort", {
         header: "仕向港",
         cell: (i) => i.getValue() || "—",
-        filterFn: "includesString",
+        filterFn: multiSelectFilter,
       }),
-      col.accessor("isTeslaCandidate", {
+      helper.accessor("isTeslaCandidate", {
         header: "Tesla",
         cell: (i) =>
-          i.getValue() ? <Zap className="size-4 fill-red-500 text-red-500" /> : null,
-        filterFn: (row, _id, val) => (val === true ? row.original.isTeslaCandidate : true),
+          i.getValue() ? (
+            <Zap className="size-4 fill-red-500 text-red-500" />
+          ) : null,
+        filterFn: (row, _id, val) =>
+          val === true ? row.original.isTeslaCandidate : true,
         enableSorting: true,
       }),
     ],
@@ -141,10 +158,21 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
   const total = ships.length;
   const filtered = table.getFilteredRowModel().rows.length;
 
+  const facetedOptions: Record<string, { title: string; options: string[] }> = {
+    vesselType: { title: "船種", options: vesselTypes },
+    status: { title: "ステータス", options: statuses },
+    previousPort: { title: "前港", options: prevPorts },
+    nextPort: { title: "次港", options: nextPorts },
+    originPort: { title: "仕出港", options: originPorts },
+    destinationPort: { title: "仕向港", options: destPorts },
+  };
+
   return (
     <div className="space-y-2">
       <p className="text-right text-xs text-muted-foreground">
-        {filtered === total ? `${total}隻` : `${filtered} / ${total}隻`}
+        {filtered === total
+          ? `${total}隻`
+          : `${filtered} / ${total}隻`}
       </p>
       <div className="overflow-x-auto rounded-md border">
         <Table>
@@ -154,11 +182,16 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
                 {hg.headers.map((h) => (
                   <TableHead
                     key={h.id}
-                    className={cn(h.column.getCanSort() && "cursor-pointer select-none")}
+                    className={cn(
+                      h.column.getCanSort() && "cursor-pointer select-none",
+                    )}
                     onClick={h.column.getToggleSortingHandler()}
                   >
                     <span className="inline-flex items-center gap-1 whitespace-nowrap">
-                      {flexRender(h.column.columnDef.header, h.getContext())}
+                      {flexRender(
+                        h.column.columnDef.header,
+                        h.getContext(),
+                      )}
                       {h.column.getCanSort() &&
                         (h.column.getIsSorted() === "asc" ? (
                           <ArrowUp className="size-3" />
@@ -176,7 +209,10 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
             <TableRow className="bg-muted/30 hover:bg-muted/30">
               {table.getHeaderGroups()[0].headers.map((h) => (
                 <TableHead key={`f-${h.id}`} className="py-1">
-                  <ColFilter header={h} vesselTypes={vesselTypes} statuses={statuses} />
+                  <ColFilter
+                    header={h}
+                    facetedOptions={facetedOptions}
+                  />
                 </TableHead>
               ))}
             </TableRow>
@@ -184,7 +220,10 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
           <TableBody>
             {table.getRowModel().rows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length} className="py-8 text-center text-muted-foreground">
+                <TableCell
+                  colSpan={columns.length}
+                  className="py-8 text-center text-muted-foreground"
+                >
                   該当する船舶がありません
                 </TableCell>
               </TableRow>
@@ -192,11 +231,21 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  className={cn(row.original.isTeslaCandidate && "bg-red-500/5")}
+                  className={cn(
+                    "cursor-pointer",
+                    row.original.isTeslaCandidate && "bg-red-500/5",
+                  )}
+                  onClick={() => setSelectedShip(row.original)}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="whitespace-nowrap text-sm">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    <TableCell
+                      key={cell.id}
+                      className="whitespace-nowrap text-sm"
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -205,55 +254,45 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
           </TableBody>
         </Table>
       </div>
+      {selectedShip && (
+        <ShipDetailModal
+          ship={selectedShip}
+          onClose={() => setSelectedShip(null)}
+        />
+      )}
     </div>
   );
 }
 
-/* ---------- per-column filter ---------- */
-
 function ColFilter({
   header,
-  vesselTypes,
-  statuses,
+  facetedOptions,
 }: {
   header: Header<Ship, unknown>;
-  vesselTypes: string[];
-  statuses: string[];
+  facetedOptions: Record<string, { title: string; options: string[] }>;
 }) {
   const { column } = header;
   const id = column.id;
   const val = column.getFilterValue();
 
-  if (id === "vesselType") {
+  // Faceted multi-select for port/type/status columns
+  if (id in facetedOptions) {
+    const { title, options } = facetedOptions[id];
+    const selected =
+      val instanceof Set ? (val as Set<string>) : new Set<string>();
     return (
-      <Select
-        value={(val as string) ?? "all"}
-        onValueChange={(v) => column.setFilterValue(v === "all" ? undefined : v)}
-      >
-        <SelectTrigger className="h-7 text-xs"><SelectValue placeholder="全て" /></SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">全て</SelectItem>
-          {vesselTypes.map((t) => (<SelectItem key={t} value={t}>{t}</SelectItem>))}
-        </SelectContent>
-      </Select>
+      <FacetedFilter
+        title={title}
+        options={options}
+        selected={selected}
+        onSelectionChange={(s) =>
+          column.setFilterValue(s.size > 0 ? s : undefined)
+        }
+      />
     );
   }
 
-  if (id === "status") {
-    return (
-      <Select
-        value={(val as string) ?? "all"}
-        onValueChange={(v) => column.setFilterValue(v === "all" ? undefined : v)}
-      >
-        <SelectTrigger className="h-7 text-xs"><SelectValue placeholder="全て" /></SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">全て</SelectItem>
-          {statuses.map((s) => (<SelectItem key={s} value={s}>{s}</SelectItem>))}
-        </SelectContent>
-      </Select>
-    );
-  }
-
+  // Tesla toggle
   if (id === "isTeslaCandidate") {
     const on = val === true;
     return (
@@ -261,20 +300,26 @@ function ColFilter({
         onClick={() => column.setFilterValue(on ? undefined : true)}
         className={cn(
           "flex h-7 w-full items-center justify-center gap-1 rounded-md border text-xs transition-colors",
-          on ? "border-red-500 bg-red-600 text-white" : "border-border text-muted-foreground hover:bg-muted",
+          on
+            ? "border-red-500 bg-red-600 text-white"
+            : "border-border text-muted-foreground hover:bg-muted",
         )}
       >
-        <Zap className="size-3" />候補船
+        <Zap className="size-3" />
+        候補船
       </button>
     );
   }
 
-  if (["name", "previousPort", "nextPort", "originPort", "destinationPort"].includes(id)) {
+  // Text input for name, arrival, departure
+  if (id === "name" || id === "arrival" || id === "departure") {
     return (
       <Input
-        placeholder="..."
+        placeholder={id === "name" ? "船名..." : "MM/DD..."}
         value={(val as string) ?? ""}
-        onChange={(e) => column.setFilterValue(e.target.value || undefined)}
+        onChange={(e) =>
+          column.setFilterValue(e.target.value || undefined)
+        }
         className="h-7 text-xs"
       />
     );
