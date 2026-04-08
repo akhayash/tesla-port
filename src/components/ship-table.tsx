@@ -264,7 +264,7 @@ function ColFilter({
           on ? "border-red-500 bg-red-600 text-white" : "border-border text-muted-foreground hover:bg-muted",
         )}
       >
-        <Zap className="size-3" />のみ
+        <Zap className="size-3" />候補船
       </button>
     );
   }
