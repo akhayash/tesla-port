@@ -1,0 +1,11 @@
+{
+  "ships": [
+    { "name": "POSITIVE STAR", "callSign": "3FKF7", "notes": "NYK operated, IMO 9304502" },
+    { "name": "MORNING CLAIRE", "callSign": "", "notes": "Car carrier on Shanghai-Japan route" },
+    { "name": "TRANS FUTURE 7", "callSign": "", "notes": "Car carrier on Shanghai-Japan route" }
+  ],
+  "routePatterns": {
+    "originPorts": ["上海", "SHANGHAI", "連雲港", "LIANYUNGANG", "太倉", "TAICANG", "南通", "NANTONG"],
+    "adjacentPorts": ["名古屋", "NAGOYA", "神戸", "KOBE", "三河", "MIKAWA", "広島", "HIROSHIMA"]
+  }
+}
