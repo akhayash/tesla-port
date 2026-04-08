@@ -30,9 +30,7 @@ function LoadingSkeleton() {
 function App() {
   const { ships, scrapedAt, isLoading, error, retry } = useShips();
   const {
-    filters, setSearch, setStatus, setTeslaOnly,
-    setCarCarrierOnly, setShanghaiOrigin, setNagoyaRoute,
-    applyFilters,
+    filters, setSearch, applyFilters,
   } = useFilter();
 
   const filtered = useMemo(
@@ -85,12 +83,6 @@ function App() {
               <ShipTable
                 ships={filtered}
                 allShips={ships}
-                filters={filters}
-                onStatusChange={setStatus}
-                onCarCarrierOnlyChange={setCarCarrierOnly}
-                onShanghaiOriginChange={setShanghaiOrigin}
-                onNagoyaRouteChange={setNagoyaRoute}
-                onTeslaOnlyChange={setTeslaOnly}
               />
             </div>
           </>
