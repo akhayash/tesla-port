@@ -27,7 +27,7 @@ jobs:
 
       - run: pnpm tsx scripts/scrape.ts
 
-      - name: Create PR if data changed
+      - name: Create and auto-merge PR if data changed
         run: |
           git diff --quiet data/ && echo "No changes" && exit 0
           BRANCH="data/update-$(date +%Y%m%d-%H%M)"
@@ -37,10 +37,11 @@ jobs:
           git add data/
           git commit -m "chore: update ship data $(date +%Y-%m-%d)"
           git push origin "$BRANCH"
-          gh pr create \
+          PR_URL=$(gh pr create \
             --title "chore: update ship data $(date +%Y-%m-%d)" \
             --body "Automated scrape from Yokohama port website." \
             --base main \
-            --head "$BRANCH"
+            --head "$BRANCH")
+          gh pr merge "$PR_URL" --squash --auto --delete-branch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
