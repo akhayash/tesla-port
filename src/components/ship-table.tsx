@@ -1,6 +1,4 @@
 import { useState, useMemo } from "react";
-import { format, isValid } from "date-fns";
-import { ja } from "date-fns/locale";
 import {
   ArrowDown,
   ArrowUp,
@@ -24,15 +22,18 @@ type SortKey =
   | "status"
   | "arrival"
   | "departure"
-  | "route"
-  | "origin"
+  | "prevPort"
+  | "nextPort"
+  | "originPort"
+  | "destPort"
   | "tesla";
 type SortDir = "asc" | "desc";
 
 function formatDate(raw: string | null): string {
   if (!raw) return "—";
-  const d = new Date(raw);
-  return isValid(d) ? format(d, "M/d HH:mm", { locale: ja }) : "—";
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed === "縲" || trimmed === "　") return "—";
+  return trimmed;
 }
 
 function getBestArrival(ship: Ship): string | null {
@@ -55,10 +56,14 @@ function getSortValue(ship: Ship, key: SortKey): string | number | boolean {
       return getBestArrival(ship) ?? "";
     case "departure":
       return getBestDeparture(ship) ?? "";
-    case "route":
-      return `${ship.previousPort}→${ship.nextPort}`;
-    case "origin":
-      return `${ship.originPort}→${ship.destinationPort}`;
+    case "prevPort":
+      return ship.previousPort;
+    case "nextPort":
+      return ship.nextPort;
+    case "originPort":
+      return ship.originPort;
+    case "destPort":
+      return ship.destinationPort;
     case "tesla":
       return ship.isTeslaCandidate ? 1 : 0;
   }
@@ -73,9 +78,11 @@ const columns: { key: SortKey; label: string }[] = [
   { key: "status", label: "ステータス" },
   { key: "arrival", label: "入港予定" },
   { key: "departure", label: "離岸予定" },
-  { key: "route", label: "前港→次港" },
-  { key: "origin", label: "仕出港→仕向港" },
-  { key: "tesla", label: "Tesla候補" },
+  { key: "prevPort", label: "前港" },
+  { key: "nextPort", label: "次港" },
+  { key: "originPort", label: "仕出港" },
+  { key: "destPort", label: "仕向港" },
+  { key: "tesla", label: "Tesla" },
 ];
 
 export function ShipTable({ ships }: ShipTableProps) {
@@ -151,14 +158,12 @@ export function ShipTable({ ships }: ShipTableProps) {
                   operationStatus={ship.operationStatus}
                 />
               </TableCell>
-              <TableCell>{formatDate(getBestArrival(ship))}</TableCell>
-              <TableCell>{formatDate(getBestDeparture(ship))}</TableCell>
-              <TableCell className="text-muted-foreground">
-                {ship.previousPort || "—"} → {ship.nextPort || "—"}
-              </TableCell>
-              <TableCell className="text-muted-foreground">
-                {ship.originPort || "—"} → {ship.destinationPort || "—"}
-              </TableCell>
+              <TableCell className="tabular-nums">{formatDate(getBestArrival(ship))}</TableCell>
+              <TableCell className="tabular-nums">{formatDate(getBestDeparture(ship))}</TableCell>
+              <TableCell className="text-muted-foreground">{ship.previousPort || "—"}</TableCell>
+              <TableCell className="text-muted-foreground">{ship.nextPort || "—"}</TableCell>
+              <TableCell className="text-muted-foreground">{ship.originPort || "—"}</TableCell>
+              <TableCell className="text-muted-foreground">{ship.destinationPort || "—"}</TableCell>
               <TableCell>
                 {ship.isTeslaCandidate && (
                   <Zap className="size-4 fill-red-500 text-red-500" />

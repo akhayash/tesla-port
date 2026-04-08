@@ -1,5 +1,3 @@
-import { format, isValid } from "date-fns";
-import { ja } from "date-fns/locale";
 import { ArrowRight, Zap } from "lucide-react";
 import {
   Card,
@@ -13,8 +11,9 @@ import type { Ship } from "@/lib/types";
 
 function formatDate(raw: string | null): string {
   if (!raw) return "—";
-  const d = new Date(raw);
-  return isValid(d) ? format(d, "M/d HH:mm", { locale: ja }) : "—";
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed === "縲" || trimmed === "　") return "—";
+  return trimmed;
 }
 
 function getBestArrival(ship: Ship): string {
@@ -70,18 +69,21 @@ export function ShipCard({ ship }: ShipCardProps) {
         </div>
         <div className="flex items-center gap-1 text-xs text-muted-foreground">
           <span>{ship.previousPort || "—"}</span>
-          <ArrowRight className="size-3" />
+          <ArrowRight className="size-3 shrink-0" />
           <span className="font-medium text-foreground">横浜</span>
-          <ArrowRight className="size-3" />
+          <ArrowRight className="size-3 shrink-0" />
           <span>{ship.nextPort || "—"}</span>
         </div>
-        {(ship.originPort || ship.destinationPort) && (
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <span>仕出: {ship.originPort || "—"}</span>
-            <ArrowRight className="size-3" />
-            <span>仕向: {ship.destinationPort || "—"}</span>
+        <div className="grid grid-cols-2 gap-x-4 text-xs text-muted-foreground">
+          <div>
+            <span className="text-[10px] uppercase tracking-wider">仕出港</span>
+            <p>{ship.originPort || "—"}</p>
           </div>
-        )}
+          <div>
+            <span className="text-[10px] uppercase tracking-wider">仕向港</span>
+            <p>{ship.destinationPort || "—"}</p>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
