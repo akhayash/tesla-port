@@ -19,6 +19,7 @@ import type { Ship } from "@/lib/types";
 
 type SortKey =
   | "name"
+  | "vesselType"
   | "status"
   | "arrival"
   | "departure"
@@ -50,6 +51,8 @@ function getSortValue(ship: Ship, key: SortKey): string | number | boolean {
   switch (key) {
     case "name":
       return ship.name;
+    case "vesselType":
+      return ship.vesselType;
     case "status":
       return ship.status;
     case "arrival":
@@ -75,6 +78,7 @@ interface ShipTableProps {
 
 const columns: { key: SortKey; label: string }[] = [
   { key: "name", label: "船名" },
+  { key: "vesselType", label: "船種" },
   { key: "status", label: "ステータス" },
   { key: "arrival", label: "入港予定" },
   { key: "departure", label: "離岸予定" },
@@ -152,6 +156,7 @@ export function ShipTable({ ships }: ShipTableProps) {
               className={cn(ship.isTeslaCandidate && "bg-red-500/5")}
             >
               <TableCell className="font-medium">{ship.name}</TableCell>
+              <TableCell className="text-xs text-muted-foreground">{ship.vesselType || "—"}</TableCell>
               <TableCell>
                 <StatusBadge
                   status={ship.status}
