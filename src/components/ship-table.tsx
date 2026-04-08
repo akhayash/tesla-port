@@ -95,6 +95,7 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
     window.history.replaceState(null, "", window.location.pathname + window.location.search);
   }, []);
 
+  const shipNames = useMemo(() => unique(allShips, (s) => s.name), [allShips]);
   const vesselTypes = useMemo(() => unique(allShips, (s) => s.vesselType), [allShips]);
   const statuses = useMemo(() => unique(allShips, (s) => s.status), [allShips]);
   const prevPorts = useMemo(() => unique(allShips, (s) => s.previousPort), [allShips]);
@@ -107,7 +108,7 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
       helper.accessor("name", {
         header: "船名",
         cell: (i) => i.getValue(),
-        filterFn: "includesString",
+        filterFn: multiSelectFilter,
       }),
       helper.accessor("vesselType", {
         header: "船種",
@@ -185,6 +186,7 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
   const filtered = table.getFilteredRowModel().rows.length;
 
   const facetedOptions: Record<string, { title: string; options: string[] }> = {
+    name: { title: "船名", options: shipNames },
     vesselType: { title: "船種", options: vesselTypes },
     status: { title: "ステータス", options: statuses },
     previousPort: { title: "前港", options: prevPorts },
@@ -398,11 +400,11 @@ function ColFilter({
     );
   }
 
-  // Text input for name, arrival, departure
-  if (id === "name" || id === "arrival" || id === "departure") {
+  // Text input for arrival, departure
+  if (id === "arrival" || id === "departure") {
     return (
       <Input
-        placeholder={id === "name" ? "船名..." : "MM/DD..."}
+        placeholder="MM/DD..."
         value={(val as string) ?? ""}
         onChange={(e) =>
           column.setFilterValue(e.target.value || undefined)
