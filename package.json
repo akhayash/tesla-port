@@ -6,6 +6,7 @@
   "packageManager": "pnpm@10.24.0",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node -e \"const fs=require('fs');fs.cpSync('data','public/data',{recursive:true})\"",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

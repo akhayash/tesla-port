@@ -35,7 +35,7 @@ jobs:
 
       - run: pnpm install
 
-      # NOTE: vite.config.ts should set `base: '/tesla-port/'` for GitHub Pages
+      - run: cp -r data/ public/data/
       - run: pnpm build
 
       - uses: actions/upload-pages-artifact@v3
