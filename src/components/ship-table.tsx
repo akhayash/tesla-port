@@ -14,6 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { StatusBadge } from "@/components/status-badge";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { Ship } from "@/lib/types";
 
@@ -156,7 +157,9 @@ export function ShipTable({ ships }: ShipTableProps) {
               className={cn(ship.isTeslaCandidate && "bg-red-500/5")}
             >
               <TableCell className="font-medium">{ship.name}</TableCell>
-              <TableCell className="text-xs text-muted-foreground">{ship.vesselType || "—"}</TableCell>
+              <TableCell>
+                <Badge variant="outline" className="text-[10px]">{ship.vesselType || "—"}</Badge>
+              </TableCell>
               <TableCell>
                 <StatusBadge
                   status={ship.status}
@@ -164,11 +167,19 @@ export function ShipTable({ ships }: ShipTableProps) {
                 />
               </TableCell>
               <TableCell className="tabular-nums">{formatDate(getBestArrival(ship))}</TableCell>
-              <TableCell className="tabular-nums">{formatDate(getBestDeparture(ship))}</TableCell>
-              <TableCell className="text-muted-foreground">{ship.previousPort || "—"}</TableCell>
-              <TableCell className="text-muted-foreground">{ship.nextPort || "—"}</TableCell>
+              <TableCell>
+                <Badge variant="secondary" className="tabular-nums text-[10px]">{formatDate(getBestDeparture(ship))}</Badge>
+              </TableCell>
+              <TableCell>
+                <Badge variant="outline" className="text-[10px]">{ship.previousPort || "—"}</Badge>
+              </TableCell>
+              <TableCell>
+                <Badge variant="outline" className="text-[10px]">{ship.nextPort || "—"}</Badge>
+              </TableCell>
               <TableCell className="text-muted-foreground">{ship.originPort || "—"}</TableCell>
-              <TableCell className="text-muted-foreground">{ship.destinationPort || "—"}</TableCell>
+              <TableCell>
+                <Badge variant="outline" className="text-[10px]">{ship.destinationPort || "—"}</Badge>
+              </TableCell>
               <TableCell>
                 {ship.isTeslaCandidate && (
                   <Zap className="size-4 fill-red-500 text-red-500" />

@@ -34,7 +34,7 @@ function matchesAny(text: string, keywords: string[]): boolean {
 
 export function useFilter(): UseFilterReturn {
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState<StatusFilter>("all");
+  const [status, setStatus] = useState<StatusFilter>("予定");
   const [teslaOnly, setTeslaOnly] = useState(false);
   const [carCarrierOnly, setCarCarrierOnly] = useState(true);
   const [shanghaiOrigin, setShanghaiOrigin] = useState(false);

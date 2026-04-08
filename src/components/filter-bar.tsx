@@ -1,12 +1,5 @@
-import { Search, Ship } from "lucide-react";
+import { Search, Ship as ShipIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { StatusFilter } from "@/hooks/use-filter";
@@ -53,28 +46,14 @@ export function FilterBar({
 }: FilterBarProps) {
   return (
     <div className="space-y-3">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="船名検索..."
-            value={search}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-8"
-          />
-        </div>
-        <Select value={status} onValueChange={(v) => onStatusChange(v as StatusFilter)}>
-          <SelectTrigger className="w-24">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {statusOptions.map((opt) => (
-              <SelectItem key={opt.value} value={opt.value}>
-                {opt.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="relative">
+        <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          placeholder="船名検索..."
+          value={search}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="pl-8"
+        />
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -87,7 +66,7 @@ export function FilterBar({
             carCarrierOnly && "bg-blue-600 text-white hover:bg-blue-700",
           )}
         >
-          <Ship className="size-3.5" />
+          <ShipIcon className="size-3.5" />
           自動車専用船
         </Button>
         <Button
@@ -120,6 +99,24 @@ export function FilterBar({
         >
           Tesla候補のみ
         </Button>
+
+        <div className="flex items-center gap-1">
+          {statusOptions.map((opt) => (
+            <Button
+              key={opt.value}
+              variant={status === opt.value ? "default" : "outline"}
+              size="sm"
+              onClick={() => onStatusChange(opt.value)}
+              className={cn(
+                "text-xs",
+                status === opt.value && "bg-violet-600 text-white hover:bg-violet-700",
+              )}
+            >
+              {opt.label}
+            </Button>
+          ))}
+        </div>
+
         <span className="ml-auto text-xs text-muted-foreground">
           {filteredCount === totalCount
             ? `${totalCount}隻`
