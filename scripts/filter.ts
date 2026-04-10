@@ -54,6 +54,12 @@ function isRouteMatch(ship: Ship, data: KnownTeslaShipsData): boolean {
   return adjacentMatch;
 }
 
+/** Check if ship originates from a known Tesla export port (e.g. Shanghai) */
+function hasOriginMatch(ship: Ship, data: KnownTeslaShipsData): boolean {
+  const { originPorts } = data.routePatterns;
+  return matchesPorts([ship.originPort, ship.previousPort], originPorts);
+}
+
 /** Determine if a ship is a Tesla candidate. */
 export function isTeslaCandidate(ship: Ship): boolean {
   const data = loadKnownData();
@@ -62,13 +68,16 @@ export function isTeslaCandidate(ship: Ship): boolean {
     ship.vesselType.includes(CAR_CARRIER_TYPE) ||
     ship.route.includes(CAR_CARRIER_TYPE);
 
-  // Must be a car carrier for any match
+  // Must be a car carrier
   if (!isCarCarrier) return false;
 
-  // Known Tesla ship on car carrier route
+  // Must have origin from China (Shanghai etc.) — even for known ships
+  if (!hasOriginMatch(ship, data)) return false;
+
+  // Known Tesla ship from China
   if (isKnownShip(ship, data)) return true;
 
-  // Car carrier on a matching route
+  // Car carrier from China with adjacent Japanese port (Nagoya etc.)
   if (isRouteMatch(ship, data)) return true;
 
   return false;

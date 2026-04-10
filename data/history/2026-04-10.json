@@ -1,5 +1,5 @@
 {
-  "scrapedAt": "2026-04-10T14:07:46.160Z",
+  "scrapedAt": "2026-04-10T14:24:07.333Z",
   "source": "http://www.port.city.yokohama.jp/APP/Pves0040InPlanC",
   "ships": [
     {
@@ -1550,7 +1550,7 @@
       "nextPort": "",
       "originPort": "",
       "destinationPort": "",
-      "isTeslaCandidate": true
+      "isTeslaCandidate": false
     },
     {
       "callSign": "V7A4532",
