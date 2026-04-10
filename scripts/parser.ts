@@ -64,6 +64,12 @@ function isHeaderRow(row: Element, $: CheerioAPI): boolean {
   return false;
 }
 
+const KNOWN_VESSEL_TYPES = [
+  "自動車専用船", "フルコンテナ船", "一般貨物船", "油送船",
+  "LNG船", "LPG船", "ばら積み貨物船", "冷凍船", "客船",
+  "RORO船", "セメント船", "その他の船舶",
+];
+
 /**
  * Parse the Yokohama port HTML table into Ship objects.
  * Table id="tblid", 18 cells per data row.
@@ -112,8 +118,26 @@ export function parseShipTable(html: string): Ship[] {
       const [callSign, vesselName] = splitCell($(cells.eq(0)), $);
       const [gtStr, loaStr] = splitCell($(cells.eq(1)), $);
       const [status, opClass] = splitCell($(cells.eq(2)), $);
-      const [vesStatus, country] = splitCell($(cells.eq(3)), $);
-      const [route, vesselClass] = splitCell($(cells.eq(4)), $);
+
+      // cell[3]: VesStatus + Country — if only one value, it's likely the country
+      const [cell3a, cell3b] = splitCell($(cells.eq(3)), $);
+      const vesStatus = cell3b ? cell3a : "";
+      const country = cell3b || cell3a;
+
+      // cell[4]: Route + VesselClass — if only one value, detect if it's a vessel type
+      const [cell4a, cell4b] = splitCell($(cells.eq(4)), $);
+      let route: string;
+      let vesselClass: string;
+      if (cell4b) {
+        route = cell4a;
+        vesselClass = cell4b;
+      } else if (KNOWN_VESSEL_TYPES.some((t) => cell4a.includes(t))) {
+        route = "";
+        vesselClass = cell4a;
+      } else {
+        route = cell4a;
+        vesselClass = "";
+      }
       const agentName = cellText($(cells.eq(5)), $);
       const [berthCode, berthName] = splitCell($(cells.eq(6)), $);
 

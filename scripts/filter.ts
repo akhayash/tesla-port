@@ -58,14 +58,18 @@ function isRouteMatch(ship: Ship, data: KnownTeslaShipsData): boolean {
 export function isTeslaCandidate(ship: Ship): boolean {
   const data = loadKnownData();
 
-  // Must be a car carrier
-  const isCarCarrier = ship.vesselType.includes(CAR_CARRIER_TYPE);
+  const isCarCarrier =
+    ship.vesselType.includes(CAR_CARRIER_TYPE) ||
+    ship.route.includes(CAR_CARRIER_TYPE);
 
-  // Known Tesla ship — always a candidate regardless of type
+  // Must be a car carrier for any match
+  if (!isCarCarrier) return false;
+
+  // Known Tesla ship on car carrier route
   if (isKnownShip(ship, data)) return true;
 
   // Car carrier on a matching route
-  if (isCarCarrier && isRouteMatch(ship, data)) return true;
+  if (isRouteMatch(ship, data)) return true;
 
   return false;
 }
