@@ -2,6 +2,7 @@ import { useEffect, useRef, useCallback, useState } from "react";
 import { X, Zap, ArrowRight, Copy, Image, Check, Link } from "lucide-react";
 import { toPng } from "html-to-image";
 import { StatusBadge } from "@/components/status-badge";
+import { VesselFinderFrame } from "@/components/vessel-finder-frame";
 import type { Ship } from "@/lib/types";
 
 function fmt(raw: string | null): string {
@@ -29,6 +30,8 @@ function shipToText(ship: Ship): string {
     `🚢 ${ship.name}${ship.isTeslaCandidate ? " ⚡Tesla候補" : ""}`,
     `ステータス: ${ship.status} / ${ship.operationStatus}`,
     `コールサイン: ${ship.callSign}`,
+    `IMO: ${ship.imo || "—"}`,
+    `MMSI: ${ship.mmsi || "—"}`,
     "",
     `【航路】 ${ship.previousPort || "—"} → 横浜 → ${ship.nextPort || "—"}`,
     `仕出港: ${ship.originPort || "—"}`,
@@ -120,7 +123,7 @@ export function ShipDetailModal({ ship, onClose }: ShipDetailModalProps) {
     >
       <div
         ref={cardRef}
-        className="w-full max-w-lg rounded-lg border border-border bg-card text-card-foreground shadow-xl"
+        className="max-h-[calc(100vh-2rem)] w-full max-w-3xl overflow-y-auto rounded-lg border border-border bg-card text-card-foreground shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -188,6 +191,8 @@ export function ShipDetailModal({ ship, onClose }: ShipDetailModalProps) {
           </span>
         </div>
 
+        <VesselFinderFrame ship={ship} />
+
         {/* Details */}
         <div className="space-y-0 p-4">
           <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -195,6 +200,8 @@ export function ShipDetailModal({ ship, onClose }: ShipDetailModalProps) {
           </h3>
           <Row label="船種" value={ship.vesselType || "—"} />
           <Row label="国籍" value={ship.nationality || "—"} />
+          <Row label="IMO" value={ship.imo || "—"} />
+          <Row label="MMSI" value={ship.mmsi || "—"} />
           <Row
             label="総トン数"
             value={

@@ -1,6 +1,10 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import type { Ship, KnownTeslaShipsData } from "../src/lib/types.ts";
+import type {
+  KnownTeslaShip,
+  KnownTeslaShipsData,
+  Ship,
+} from "../src/lib/types.ts";
 
 const CAR_CARRIER_TYPE = "自動車専用船";
 
@@ -15,16 +19,30 @@ function loadKnownData(): KnownTeslaShipsData {
   return _knownData;
 }
 
-/** Check if the ship name matches any known Tesla ship. */
-function isKnownShip(ship: Ship, data: KnownTeslaShipsData): boolean {
+/** Find a known Tesla ship entry that matches the scraped record. */
+function findKnownShip(
+  ship: Ship,
+  data: KnownTeslaShipsData
+): KnownTeslaShip | undefined {
   const nameUpper = ship.name.toUpperCase().trim();
   const callUpper = ship.callSign.toUpperCase().trim();
 
-  return data.ships.some((known) => {
+  return data.ships.find((known) => {
     if (known.callSign && callUpper === known.callSign.toUpperCase()) return true;
     if (known.name && nameUpper === known.name.toUpperCase()) return true;
     return false;
   });
+}
+
+function enrichKnownShip(ship: Ship, data: KnownTeslaShipsData): Ship {
+  const knownShip = findKnownShip(ship, data);
+  if (!knownShip) return ship;
+
+  return {
+    ...ship,
+    imo: knownShip.imo ?? ship.imo,
+    mmsi: knownShip.mmsi ?? ship.mmsi,
+  };
 }
 
 /** Check if any of the ship's ports match a route pattern list. */
@@ -60,10 +78,10 @@ function hasOriginMatch(ship: Ship, data: KnownTeslaShipsData): boolean {
   return matchesPorts([ship.originPort, ship.previousPort], originPorts);
 }
 
-/** Determine if a ship is a Tesla candidate. */
-export function isTeslaCandidate(ship: Ship): boolean {
-  const data = loadKnownData();
-
+function isTeslaCandidateWithData(
+  ship: Ship,
+  data: KnownTeslaShipsData
+): boolean {
   const isCarCarrier =
     ship.vesselType.includes(CAR_CARRIER_TYPE) ||
     ship.route.includes(CAR_CARRIER_TYPE);
@@ -75,7 +93,7 @@ export function isTeslaCandidate(ship: Ship): boolean {
   if (!hasOriginMatch(ship, data)) return false;
 
   // Known Tesla ship from China
-  if (isKnownShip(ship, data)) return true;
+  if (findKnownShip(ship, data)) return true;
 
   // Car carrier from China with adjacent Japanese port (Nagoya etc.)
   if (isRouteMatch(ship, data)) return true;
@@ -83,10 +101,21 @@ export function isTeslaCandidate(ship: Ship): boolean {
   return false;
 }
 
+/** Determine if a ship is a Tesla candidate. */
+export function isTeslaCandidate(ship: Ship): boolean {
+  const data = loadKnownData();
+  return isTeslaCandidateWithData(ship, data);
+}
+
 /** Apply Tesla candidate filter to all ships, setting the isTeslaCandidate flag. */
 export function applyTeslaFilter(ships: Ship[]): Ship[] {
-  return ships.map((ship) => ({
-    ...ship,
-    isTeslaCandidate: isTeslaCandidate(ship),
-  }));
+  const data = loadKnownData();
+
+  return ships.map((ship) => {
+    const enrichedShip = enrichKnownShip(ship, data);
+    return {
+      ...enrichedShip,
+      isTeslaCandidate: isTeslaCandidateWithData(enrichedShip, data),
+    };
+  });
 }

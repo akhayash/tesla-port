@@ -30,6 +30,8 @@ export interface Ship {
   nextPort: string;
   originPort: string;
   destinationPort: string;
+  imo?: string;
+  mmsi?: string;
   isTeslaCandidate: boolean;
 }
 
@@ -42,6 +44,8 @@ export interface ShipData {
 export interface KnownTeslaShip {
   name: string;
   callSign: string;
+  imo?: string;
+  mmsi?: string;
   notes: string;
 }
 
@@ -53,4 +57,18 @@ export interface RoutePatterns {
 export interface KnownTeslaShipsData {
   ships: KnownTeslaShip[];
   routePatterns: RoutePatterns;
+}
+
+export interface ShipIdentifierRecord {
+  callSign: string;
+  name: string;
+  imo?: string;
+  mmsi?: string;
+  source: string;
+  updatedAt: string;
+}
+
+export interface ShipIdentifierCacheFile {
+  updatedAt: string | null;
+  ships: ShipIdentifierRecord[];
 }
