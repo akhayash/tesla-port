@@ -99,7 +99,6 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
   const vesselTypes = useMemo(() => unique(allShips, (s) => s.vesselType), [allShips]);
   const statuses = useMemo(() => unique(allShips, (s) => s.status), [allShips]);
   const prevPorts = useMemo(() => unique(allShips, (s) => s.previousPort), [allShips]);
-  const nextPorts = useMemo(() => unique(allShips, (s) => s.nextPort), [allShips]);
   const originPorts = useMemo(() => unique(allShips, (s) => s.originPort), [allShips]);
   const destPorts = useMemo(() => unique(allShips, (s) => s.destinationPort), [allShips]);
 
@@ -138,13 +137,16 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
         filterFn: "includesString",
       }),
       helper.accessor("previousPort", {
-        header: "前港",
-        cell: (i) => i.getValue() || "—",
-        filterFn: multiSelectFilter,
-      }),
-      helper.accessor("nextPort", {
-        header: "次港",
-        cell: (i) => i.getValue() || "—",
+        header: "前港→横浜→次港",
+        cell: (i) => (
+          <span className="inline-flex items-center gap-1">
+            <span>{i.getValue() || "—"}</span>
+            <span className="text-muted-foreground">→</span>
+            <span className="font-semibold text-primary">横浜</span>
+            <span className="text-muted-foreground">→</span>
+            <span>{i.row.original.nextPort || "—"}</span>
+          </span>
+        ),
         filterFn: multiSelectFilter,
       }),
       helper.accessor("originPort", {
@@ -190,7 +192,6 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
     vesselType: { title: "船種", options: vesselTypes },
     status: { title: "ステータス", options: statuses },
     previousPort: { title: "前港", options: prevPorts },
-    nextPort: { title: "次港", options: nextPorts },
     originPort: { title: "仕出港", options: originPorts },
     destinationPort: { title: "仕向港", options: destPorts },
   };
