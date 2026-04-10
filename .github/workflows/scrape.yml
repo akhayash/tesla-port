@@ -42,6 +42,6 @@ jobs:
             --body "Automated scrape from Yokohama port website." \
             --base main \
             --head "$BRANCH")
-          gh pr merge "$PR_URL" --squash --auto --delete-branch
+          gh pr merge "$PR_URL" --squash --delete-branch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
