@@ -40,7 +40,7 @@ function App() {
             <ShipTable ships={ships} allShips={ships} />
             <footer className="space-y-1 pb-4 text-xs text-muted-foreground">
               <p>
-                ⚡ Tesla候補の判定条件: 船種が「自動車専用船」かつ仕出港または前港が上海（Shanghai）の船舶を自動判定しています。Tesla 車両の積載を保証するものではありません。
+                ⚡ Tesla候補の判定条件: 船種が「自動車専用船」または「RORO船」かつ仕出港または前港が上海（Shanghai）の船舶を自動判定しています。Tesla 車両の積載を保証するものではありません。
               </p>
               <p>
                 データソース:{" "}

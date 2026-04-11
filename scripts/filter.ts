@@ -7,6 +7,7 @@ import type {
 } from "../src/lib/types.ts";
 
 const CAR_CARRIER_TYPE = "自動車専用船";
+const RORO_TYPE = "RORO船";
 
 let _knownData: KnownTeslaShipsData | null = null;
 
@@ -67,7 +68,9 @@ function isTeslaCandidateWithData(
 ): boolean {
   const isCarCarrier =
     ship.vesselType.includes(CAR_CARRIER_TYPE) ||
-    ship.route.includes(CAR_CARRIER_TYPE);
+    ship.vesselType.includes(RORO_TYPE) ||
+    ship.route.includes(CAR_CARRIER_TYPE) ||
+    ship.route.includes(RORO_TYPE);
 
   // Must be a car carrier
   if (!isCarCarrier) return false;
