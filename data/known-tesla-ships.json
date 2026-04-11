@@ -1,6 +1,6 @@
 {
   "ships": [
-    { "name": "POSITIVE STAR", "callSign": "3FKF7", "notes": "NYK operated, IMO 9304502" },
+    { "name": "POSITIVE STAR", "callSign": "H8WC", "imo": "9304502", "notes": "NYK operated" },
     { "name": "MORNING CLAIRE", "callSign": "", "notes": "Car carrier on Shanghai-Japan route" },
     { "name": "TRANS FUTURE 7", "callSign": "", "notes": "Car carrier on Shanghai-Japan route" }
   ],

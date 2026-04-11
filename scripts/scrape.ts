@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import * as iconv from "iconv-lite";
 import { parseShipTable } from "./parser.ts";
 import { applyTeslaFilter } from "./filter.ts";
+import { enrichShipIdentifiers } from "./enrich-identifiers.ts";
 import type { ShipData } from "../src/lib/types.ts";
 
 const TARGET_URL = "http://www.port.city.yokohama.jp/APP/Pves0040InPlanC";
@@ -113,7 +114,15 @@ async function main(): Promise<void> {
     console.log(`  → ${candidate.name} (${candidate.callSign}) [${candidate.vesselType}] from ${candidate.originPort}`);
   }
 
-  // 4. Build output
+  // 4. Enrich IMO/MMSI for Tesla candidates only
+  console.log("[scrape] Enriching identifiers for Tesla candidates...");
+  const enrichment = await enrichShipIdentifiers(ships);
+  ships = enrichment.ships;
+  console.log(
+    `[scrape] Identifier enrichment — candidates: ${enrichment.stats.candidates}, cache hits: ${enrichment.stats.cacheHits}, lookup hits: ${enrichment.stats.lookupHits}, misses: ${enrichment.stats.misses}, ambiguous: ${enrichment.stats.ambiguous}, skipped: ${enrichment.stats.skipped}, errors: ${enrichment.stats.errors}`
+  );
+
+  // 5. Build output
   const data: ShipData = {
     scrapedAt: new Date().toISOString(),
     source: TARGET_URL,
@@ -126,12 +135,12 @@ async function main(): Promise<void> {
 
   mkdirSync(historyDir, { recursive: true });
 
-  // 5. Write data/ships.json
+  // 6. Write data/ships.json
   const shipsPath = resolve(dataDir, "ships.json");
   writeFileSync(shipsPath, JSON.stringify(data, null, 2), "utf-8");
   console.log(`[scrape] Wrote ${shipsPath}`);
 
-  // 6. Copy to data/history/YYYY-MM-DD.json
+  // 7. Copy to data/history/YYYY-MM-DD.json
   const historyPath = resolve(historyDir, `${todayString()}.json`);
   copyFileSync(shipsPath, historyPath);
   console.log(`[scrape] Copied to ${historyPath}`);
