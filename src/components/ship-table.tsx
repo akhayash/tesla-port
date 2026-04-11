@@ -73,22 +73,42 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
   const [copiedImage, setCopiedImage] = useState(false);
   const tableRef = useRef<HTMLDivElement>(null);
 
+  // Build a unique hash key for each ship (callSign or name + index for duplicates)
+  const shipHashKey = useCallback(
+    (ship: Ship): string => {
+      const base = ship.callSign || encodeURIComponent(ship.name);
+      const sameKey = ships.filter(
+        (s) => (s.callSign || encodeURIComponent(s.name)) === base
+      );
+      if (sameKey.length <= 1) return base;
+      const idx = sameKey.indexOf(ship);
+      return idx > 0 ? `${base}:${idx}` : base;
+    },
+    [ships]
+  );
+
   // Permalink: open modal from URL hash on mount
   useEffect(() => {
-    const hash = window.location.hash.replace("#", "");
-    if (hash && ships.length > 0) {
-      const match = ships.find(
-        (s) => s.callSign === hash || s.name === decodeURIComponent(hash),
-      );
-      if (match) setSelectedShip(match);
-    }
+    const raw = window.location.hash.replace("#", "");
+    if (!raw || ships.length === 0) return;
+
+    const [key, idxStr] = raw.split(":");
+    const idx = idxStr !== undefined ? Number(idxStr) : 0;
+    const candidates = ships.filter(
+      (s) => s.callSign === key || s.name === decodeURIComponent(key)
+    );
+    const match = candidates[idx] ?? candidates[0];
+    if (match) setSelectedShip(match);
   }, [ships]);
 
   // Update URL hash when modal opens/closes
-  const openShip = useCallback((ship: Ship) => {
-    setSelectedShip(ship);
-    window.history.replaceState(null, "", `#${ship.callSign || encodeURIComponent(ship.name)}`);
-  }, []);
+  const openShip = useCallback(
+    (ship: Ship) => {
+      setSelectedShip(ship);
+      window.history.replaceState(null, "", `#${shipHashKey(ship)}`);
+    },
+    [shipHashKey]
+  );
 
   const closeShip = useCallback(() => {
     setSelectedShip(null);
