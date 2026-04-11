@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-10T21:49:18.434Z",
+  "updatedAt": "2026-04-11T06:20:07.334Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -7,6 +7,22 @@
       "imo": "9304502",
       "source": "existing",
       "updatedAt": "2026-04-10T21:49:18.434Z"
+    },
+    {
+      "callSign": "D7JB",
+      "name": "MORNING MARGARET",
+      "imo": "9367580",
+      "mmsi": "440338000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-04-11T06:20:02.312Z"
+    },
+    {
+      "callSign": "9WUX3",
+      "name": "MALAYSIA GRACE",
+      "imo": "9542283",
+      "mmsi": "533132164",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-04-11T06:20:07.334Z"
     }
   ]
 }
