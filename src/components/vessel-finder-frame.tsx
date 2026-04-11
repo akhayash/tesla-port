@@ -40,29 +40,14 @@ export function VesselFinderFrame({ ship }: VesselFinderFrameProps) {
 
   return (
     <section className="space-y-3 border-b px-4 py-4">
-      <div className="space-y-1">
-        <div className="space-y-1">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            現在位置
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            公開サイトでは埋め込み表示が拒否されるため、VesselFinder を別タブで開きます。
-          </p>
-        </div>
-      </div>
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        現在位置
+      </h3>
 
       <div className="overflow-hidden rounded-lg border border-border/60 bg-background">
         {hasIdentifier ? (
-          <div className="flex min-h-56 flex-col items-center justify-center gap-4 px-6 py-8 text-center">
+          <div className="flex min-h-32 flex-col items-center justify-center gap-3 px-6 py-6 text-center">
             <MapPinned className="size-8 text-muted-foreground" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium">
-                このサイトへの直接埋め込みは許可されていません
-              </p>
-              <p className="text-sm text-muted-foreground">
-                VesselFinder 側で Forbidden が返るため、この画面では外部リンクで開く方式にしています。
-              </p>
-            </div>
             <a
               href={externalUrl}
               target="_blank"
@@ -74,14 +59,11 @@ export function VesselFinderFrame({ ship }: VesselFinderFrameProps) {
             </a>
           </div>
         ) : (
-          <div className="flex min-h-56 flex-col items-center justify-center gap-3 px-6 py-8 text-center">
+          <div className="flex min-h-32 flex-col items-center justify-center gap-3 px-6 py-6 text-center">
             <MapPinned className="size-8 text-muted-foreground" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium">位置表示用の識別子が未設定です</p>
-              <p className="text-sm text-muted-foreground">
-                この船は IMO / MMSI が未登録のため、VesselFinder への直接リンクを作れません。
-              </p>
-            </div>
+            <p className="text-sm text-muted-foreground">
+              IMO / MMSI が未登録のため、位置情報リンクを表示できません
+            </p>
           </div>
         )}
       </div>
