@@ -38,6 +38,22 @@ function App() {
         ) : (
           <>
             <ShipTable ships={ships} allShips={ships} />
+            <footer className="space-y-1 pb-4 text-xs text-muted-foreground">
+              <p>
+                ⚡ Tesla候補の判定条件: 船種が「自動車専用船」かつ仕出港または前港が上海（Shanghai）の船舶を自動判定しています。Tesla 車両の積載を保証するものではありません。
+              </p>
+              <p>
+                データソース:{" "}
+                <a
+                  href="http://www.port.city.yokohama.jp/APP/Pves0040InPlanC"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline hover:text-foreground"
+                >
+                  横浜港 入出港予定船情報照会
+                </a>
+              </p>
+            </footer>
           </>
         )}
       </main>
