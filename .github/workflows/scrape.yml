@@ -32,7 +32,7 @@ jobs:
       - name: Create and auto-merge PR if data changed
         run: |
           git diff --quiet data/ && echo "No changes" && exit 0
-          BRANCH="data/update-$(date +%Y%m%d-%H%M)"
+          BRANCH="data/update-$(date +%Y%m%d-%H%M%S)"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BRANCH"
@@ -44,6 +44,16 @@ jobs:
             --body "Automated scrape from Yokohama port website." \
             --base main \
             --head "$BRANCH")
-          gh pr merge "$PR_URL" --squash --delete-branch
+          # Retry merge up to 3 times (base branch may be updated by parallel deploys)
+          for i in 1 2 3; do
+            if gh pr merge "$PR_URL" --squash --delete-branch; then
+              echo "Merged on attempt $i"
+              exit 0
+            fi
+            echo "Merge attempt $i failed, waiting 10s..."
+            sleep 10
+          done
+          echo "All merge attempts failed"
+          exit 1
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
