@@ -54,10 +54,15 @@ export function findCacheEntry(
   ship: Ship,
   cache: ShipIdentifierCacheFile
 ): ShipIdentifierRecord | undefined {
+  const imo = normalize(ship.imo);
+  const mmsi = normalize(ship.mmsi);
   const callSign = normalize(ship.callSign);
   const name = normalize(ship.name);
 
   return cache.ships.find((entry) => {
+    // Prefer stable identifiers first
+    if (imo && normalize(entry.imo) === imo) return true;
+    if (mmsi && normalize(entry.mmsi) === mmsi) return true;
     if (callSign && normalize(entry.callSign) === callSign) return true;
     if (name && normalize(entry.name) === name) return true;
     return false;
@@ -92,6 +97,15 @@ export function upsertCache(
   };
 
   const existingIndex = cache.ships.findIndex((entry) => {
+    // Match by stable identifier first, then by callSign/name
+    const sameImo =
+      normalize(entry.imo) &&
+      normalize(entry.imo) === normalize(ship.imo);
+    if (sameImo) return true;
+    const sameMmsi =
+      normalize(entry.mmsi) &&
+      normalize(entry.mmsi) === normalize(ship.mmsi);
+    if (sameMmsi) return true;
     const sameCallSign =
       normalize(entry.callSign) &&
       normalize(entry.callSign) === normalize(ship.callSign);
@@ -105,8 +119,12 @@ export function upsertCache(
     ? {
         ...existing,
         ...record,
+        // Preserve stable identifiers; never downgrade
         imo: record.imo ?? existing.imo,
         mmsi: record.mmsi ?? existing.mmsi,
+        // Keep existing callSign if new one is empty
+        callSign: normalize(record.callSign) ? record.callSign : existing.callSign,
+        name: normalize(record.name) ? record.name : existing.name,
       }
     : record;
 
