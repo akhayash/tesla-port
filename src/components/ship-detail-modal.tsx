@@ -83,15 +83,14 @@ export function ShipDetailModal({ ship, onClose }: ShipDetailModalProps) {
 
   const handleCopyLink = useCallback(async () => {
     try {
-      const id = ship.callSign || encodeURIComponent(ship.name);
-      const url = `${window.location.origin}${window.location.pathname}#${id}`;
+      const url = `${window.location.origin}${window.location.pathname}${window.location.hash}`;
       await navigator.clipboard.writeText(url);
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 2000);
     } catch {
       // silently fail
     }
-  }, [ship]);
+  }, []);
 
   const handleCopyImage = useCallback(async () => {
     if (!cardRef.current) return;
