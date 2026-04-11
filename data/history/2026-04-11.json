@@ -1,5 +1,5 @@
 {
-  "scrapedAt": "2026-04-11T09:44:04.543Z",
+  "scrapedAt": "2026-04-11T09:48:26.351Z",
   "source": "http://www.port.city.yokohama.jp/APP/Pves0040InPlanC",
   "ships": [
     {
@@ -3626,7 +3626,9 @@
       "nextPort": "SHANGHAI",
       "originPort": "シャンハイ（上海）",
       "destinationPort": "シャンハイ（上海）",
-      "isTeslaCandidate": false
+      "isTeslaCandidate": true,
+      "imo": "9442627",
+      "mmsi": "413468970"
     },
     {
       "callSign": "V2B2011",
