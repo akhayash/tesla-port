@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-11T10:03:32.881Z",
+  "updatedAt": "2026-04-13T10:49:57.236Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -31,6 +31,14 @@
       "mmsi": "413468970",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-04-11T10:03:32.881Z"
+    },
+    {
+      "callSign": "3EKQ",
+      "name": "DENEB LEADER",
+      "imo": "9738777",
+      "mmsi": "356688000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-04-13T10:49:57.236Z"
     }
   ]
 }
