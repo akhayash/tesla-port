@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-13T10:49:57.236Z",
+  "updatedAt": "2026-04-15T10:19:07.051Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -39,6 +39,14 @@
       "mmsi": "356688000",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-04-13T10:49:57.236Z"
+    },
+    {
+      "callSign": "9WUQ7",
+      "name": "MALAYSIA PASSION",
+      "imo": "9446489",
+      "mmsi": "533170658",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-04-15T10:19:07.051Z"
     }
   ]
 }
