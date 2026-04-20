@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-17T10:16:07.078Z",
+  "updatedAt": "2026-04-20T10:52:02.805Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -55,6 +55,14 @@
       "mmsi": "636017295",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-04-17T10:16:07.078Z"
+    },
+    {
+      "callSign": "LANK8",
+      "name": "NOCC OCEANIC",
+      "imo": "9624029",
+      "mmsi": "257767000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-04-20T10:52:02.805Z"
     }
   ]
 }
