@@ -14,6 +14,8 @@ function fmt(raw: string | null): string {
 interface ShipDetailModalProps {
   ship: Ship;
   onClose: () => void;
+  linkedShips?: Ship[];
+  onSelectLinked?: (ship: Ship) => void;
 }
 
 function Row({ label, value }: { label: string; value: string }) {
@@ -56,7 +58,12 @@ function shipToText(ship: Ship): string {
   return lines.join("\n");
 }
 
-export function ShipDetailModal({ ship, onClose }: ShipDetailModalProps) {
+export function ShipDetailModal({
+  ship,
+  onClose,
+  linkedShips = [],
+  onSelectLinked,
+}: ShipDetailModalProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [copiedText, setCopiedText] = useState(false);
   const [copiedImage, setCopiedImage] = useState(false);
@@ -83,7 +90,10 @@ export function ShipDetailModal({ ship, onClose }: ShipDetailModalProps) {
 
   const handleCopyLink = useCallback(async () => {
     try {
-      const url = `${window.location.origin}${window.location.pathname}${window.location.hash}`;
+      const { origin, pathname, hash } = window.location;
+      const params = new URLSearchParams(window.location.search);
+      params.set("utm_source", "share");
+      const url = `${origin}${pathname}?${params.toString()}${hash}`;
       await navigator.clipboard.writeText(url);
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 2000);
@@ -117,14 +127,18 @@ export function ShipDetailModal({ ship, onClose }: ShipDetailModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 sm:items-center sm:p-4"
       onClick={onClose}
     >
       <div
         ref={cardRef}
-        className="max-h-[calc(100vh-2rem)] w-full max-w-3xl overflow-y-auto rounded-lg border border-border bg-card text-card-foreground shadow-xl"
+        className="max-h-[90vh] w-full overflow-y-auto rounded-t-xl border border-border bg-card pb-[env(safe-area-inset-bottom)] text-card-foreground shadow-xl sm:max-h-[calc(100vh-2rem)] sm:max-w-3xl sm:rounded-lg sm:pb-0"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Mobile drag indicator */}
+        <div className="flex justify-center pt-2 sm:hidden" aria-hidden>
+          <span className="h-1 w-10 rounded-full bg-border" />
+        </div>
         {/* Header */}
         <div className="flex items-start justify-between border-b p-4">
           <div className="space-y-1">
@@ -238,6 +252,41 @@ export function ShipDetailModal({ ship, onClose }: ShipDetailModalProps) {
           <Row label="仕出港" value={ship.originPort || "—"} />
           <Row label="仕向港" value={ship.destinationPort || "—"} />
           <Row label="航路" value={ship.route || "—"} />
+        </div>
+
+        {linkedShips.length > 0 && (
+          <div className="space-y-2 border-t border-border/50 px-4 pb-4 pt-3">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              同名船の他エントリ ({linkedShips.length})
+            </h3>
+            <ul className="space-y-1">
+              {linkedShips.map((linked, idx) => (
+                <li key={`${linked.callSign}-${idx}`}>
+                  <button
+                    type="button"
+                    onClick={() => onSelectLinked?.(linked)}
+                    className="flex w-full items-center justify-between gap-3 rounded-md border border-border/60 bg-background/60 px-3 py-2 text-left text-sm transition-colors hover:border-tesla/60 hover:bg-muted/60"
+                  >
+                    <span className="truncate">
+                      {linked.previousPort || "—"} → 横浜 → {linked.nextPort || "—"}
+                    </span>
+                    <span className="shrink-0 text-xs text-muted-foreground">
+                      {fmt(linked.scheduledArrival || linked.actualArrival)}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Brand footer — visible in share card image */}
+        <div className="flex items-center justify-between gap-2 border-t border-border/50 px-4 py-3 text-[11px] text-muted-foreground">
+          <span className="inline-flex items-center gap-1.5">
+            <Zap className="size-3.5 fill-tesla text-tesla" />
+            <span className="font-semibold tracking-wide">Tesla Port Finder</span>
+          </span>
+          <span className="truncate">{window.location.host}</span>
         </div>
       </div>
     </div>
