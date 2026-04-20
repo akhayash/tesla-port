@@ -39,6 +39,9 @@
     --color-card: var(--card);
     --color-foreground: var(--foreground);
     --color-background: var(--background);
+    --color-tesla: var(--tesla);
+    --color-tesla-foreground: var(--tesla-foreground);
+    --color-tesla-muted: var(--tesla-muted);
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);
     --radius-lg: var(--radius);
@@ -67,6 +70,9 @@
     --border: oklch(0.922 0 0);
     --input: oklch(0.922 0 0);
     --ring: oklch(0.708 0 0);
+    --tesla: oklch(0.58 0.22 24);
+    --tesla-foreground: oklch(0.985 0 0);
+    --tesla-muted: oklch(0.94 0.05 20);
     --chart-1: oklch(0.87 0 0);
     --chart-2: oklch(0.556 0 0);
     --chart-3: oklch(0.439 0 0);
@@ -102,6 +108,9 @@
     --border: oklch(1 0 0 / 10%);
     --input: oklch(1 0 0 / 15%);
     --ring: oklch(0.556 0 0);
+    --tesla: oklch(0.66 0.22 24);
+    --tesla-foreground: oklch(1 0 0);
+    --tesla-muted: oklch(0.28 0.08 22);
     --chart-1: oklch(0.87 0 0);
     --chart-2: oklch(0.556 0 0);
     --chart-3: oklch(0.439 0 0);
@@ -127,4 +136,17 @@
   html {
     @apply font-sans;
     }
+}
+
+@layer utilities {
+  @keyframes tesla-pulse {
+    0%, 100% { opacity: 1; filter: drop-shadow(0 0 0 transparent); }
+    50% { opacity: 0.85; filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.55)); }
+  }
+  .animate-tesla-pulse {
+    animation: tesla-pulse 2.4s ease-in-out infinite;
+  }
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
 }
