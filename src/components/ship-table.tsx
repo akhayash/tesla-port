@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useCallback, useEffect } from "react";
+import { useState, useMemo, useRef, useCallback } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -24,7 +24,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/components/status-badge";
 import { FacetedFilter } from "@/components/faceted-filter";
-import { ShipDetailModal } from "@/components/ship-detail-modal";
+import { ShipCardList } from "@/components/ship-card-list";
+import { FavoriteButton } from "@/components/favorite-button";
+import { favoriteKey } from "@/hooks/use-favorites";
 import { cn } from "@/lib/utils";
 import type { Ship } from "@/lib/types";
 
@@ -59,16 +61,18 @@ const helper = createColumnHelper<Ship>();
 interface ShipTableProps {
   ships: Ship[];
   allShips: Ship[];
+  onOpenShip: (ship: Ship) => void;
+  favorites?: {
+    has: (key: string) => boolean;
+    toggle: (key: string) => void;
+  };
 }
 
-export function ShipTable({ ships, allShips }: ShipTableProps) {
+export function ShipTable({ ships, allShips, onOpenShip, favorites }: ShipTableProps) {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "arrival", desc: false },
   ]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
-    { id: "isTeslaCandidate", value: true },
-  ]);
-  const [selectedShip, setSelectedShip] = useState<Ship | null>(null);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [copiedText, setCopiedText] = useState(false);
   const [copiedImage, setCopiedImage] = useState(false);
   const tableRef = useRef<HTMLDivElement>(null);
@@ -87,33 +91,9 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
     [ships]
   );
 
-  // Permalink: open modal from URL hash on mount
-  useEffect(() => {
-    const raw = window.location.hash.replace("#", "");
-    if (!raw || ships.length === 0) return;
+  void shipHashKey;
 
-    const [key, idxStr] = raw.split(":");
-    const idx = idxStr !== undefined ? Number(idxStr) : 0;
-    const candidates = ships.filter(
-      (s) => s.callSign === key || s.name === decodeURIComponent(key)
-    );
-    const match = candidates[idx] ?? candidates[0];
-    if (match) setSelectedShip(match);
-  }, [ships]);
-
-  // Update URL hash when modal opens/closes
-  const openShip = useCallback(
-    (ship: Ship) => {
-      setSelectedShip(ship);
-      window.history.replaceState(null, "", `#${shipHashKey(ship)}`);
-    },
-    [shipHashKey]
-  );
-
-  const closeShip = useCallback(() => {
-    setSelectedShip(null);
-    window.history.replaceState(null, "", window.location.pathname + window.location.search);
-  }, []);
+  const openShip = onOpenShip;
 
   const shipNames = useMemo(() => unique(allShips, (s) => s.name), [allShips]);
   const vesselTypes = useMemo(() => unique(allShips, (s) => s.vesselType), [allShips]);
@@ -126,7 +106,21 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
     () => [
       helper.accessor("name", {
         header: "船名",
-        cell: (i) => i.getValue(),
+        cell: (i) => {
+          const ship = i.row.original;
+          const key = favoriteKey(ship);
+          return (
+            <span className="inline-flex items-center gap-1.5">
+              {favorites && (
+                <FavoriteButton
+                  active={favorites.has(key)}
+                  onToggle={() => favorites.toggle(key)}
+                />
+              )}
+              <span>{i.getValue()}</span>
+            </span>
+          );
+        },
         filterFn: multiSelectFilter,
       }),
       helper.accessor("vesselType", {
@@ -190,7 +184,7 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
         enableSorting: true,
       }),
     ],
-    [],
+    [favorites],
   );
 
   const table = useReactTable({
@@ -284,7 +278,7 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
             : `${filtered} / ${total}隻`}
         </span>
       </div>
-      <div ref={tableRef} className="overflow-x-auto rounded-md border">
+      <div ref={tableRef} className="hidden overflow-x-auto rounded-md border md:block">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((hg) => (
@@ -364,12 +358,14 @@ export function ShipTable({ ships, allShips }: ShipTableProps) {
           </TableBody>
         </Table>
       </div>
-      {selectedShip && (
-        <ShipDetailModal
-          ship={selectedShip}
-          onClose={closeShip}
+      <div className="md:hidden">
+        <ShipCardList
+          ships={table.getRowModel().rows.map((r) => r.original)}
+          onSelect={openShip}
+          favorites={favorites}
         />
-      )}
+      </div>
+      {/* Modal is rendered by the parent (App) to support all views. */}
     </div>
   );
 }
@@ -402,23 +398,9 @@ function ColFilter({
     );
   }
 
-  // Tesla toggle
+  // Tesla toggle is handled by the global QuickFilters above the table.
   if (id === "isTeslaCandidate") {
-    const on = val === true;
-    return (
-      <button
-        onClick={() => column.setFilterValue(on ? undefined : true)}
-        className={cn(
-          "flex h-7 w-full items-center justify-center gap-1 rounded-md border text-xs transition-colors",
-          on
-            ? "border-red-500 bg-red-600 text-white"
-            : "border-border text-muted-foreground hover:bg-muted",
-        )}
-      >
-        <Zap className="size-3" />
-        候補船
-      </button>
-    );
+    return null;
   }
 
   // Text input for arrival, departure
