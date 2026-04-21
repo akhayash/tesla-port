@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-20T10:52:02.805Z",
+  "updatedAt": "2026-04-21T10:20:15.971Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -63,6 +63,14 @@
       "mmsi": "257767000",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-04-20T10:52:02.805Z"
+    },
+    {
+      "callSign": "3FYP8",
+      "name": "PLEIADES SPIRIT",
+      "imo": "9409326",
+      "mmsi": "370852000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-04-21T10:20:15.971Z"
     }
   ]
 }
