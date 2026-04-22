@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-21T10:20:15.971Z",
+  "updatedAt": "2026-04-22T10:20:55.761Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -71,6 +71,14 @@
       "mmsi": "370852000",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-04-21T10:20:15.971Z"
+    },
+    {
+      "callSign": "7KJZ",
+      "name": "SALVIA ACE",
+      "imo": "9338876",
+      "mmsi": "431921000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-04-22T10:20:55.761Z"
     }
   ]
 }
