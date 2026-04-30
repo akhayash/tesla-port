@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-22T10:20:55.761Z",
+  "updatedAt": "2026-04-30T10:57:52.774Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -79,6 +79,14 @@
       "mmsi": "431921000",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-04-22T10:20:55.761Z"
+    },
+    {
+      "callSign": "D7BP",
+      "name": "MORNING COMPOSER",
+      "imo": "9336074",
+      "mmsi": "440204000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-04-30T10:57:52.774Z"
     }
   ]
 }
