@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-30T10:57:52.774Z",
+  "updatedAt": "2026-05-01T10:25:05.667Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -87,6 +87,14 @@
       "mmsi": "440204000",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-04-30T10:57:52.774Z"
+    },
+    {
+      "callSign": "3FUV4",
+      "name": "NEPTUNE LEADER",
+      "imo": "9402744",
+      "mmsi": "357079000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-05-01T10:25:05.667Z"
     }
   ]
 }
