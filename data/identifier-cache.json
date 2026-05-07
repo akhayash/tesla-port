@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-01T10:25:05.667Z",
+  "updatedAt": "2026-05-07T11:11:26.971Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -95,6 +95,14 @@
       "mmsi": "357079000",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-05-01T10:25:05.667Z"
+    },
+    {
+      "callSign": "9WTO5",
+      "name": "MALAYSIA BRAVE",
+      "imo": "9446477",
+      "mmsi": "533170514",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-05-07T11:11:26.971Z"
     }
   ]
 }
