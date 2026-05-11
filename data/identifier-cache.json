@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-07T11:11:26.971Z",
+  "updatedAt": "2026-05-11T12:13:39.753Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -103,6 +103,14 @@
       "mmsi": "533170514",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-05-07T11:11:26.971Z"
+    },
+    {
+      "callSign": "5LTO2",
+      "name": "CADWELL",
+      "imo": "9999979",
+      "mmsi": "636024635",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-05-11T12:13:39.753Z"
     }
   ]
 }
