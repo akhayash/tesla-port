@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-11T12:13:39.753Z",
+  "updatedAt": "2026-05-19T12:13:12.642Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -111,6 +111,22 @@
       "mmsi": "636024635",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-05-11T12:13:39.753Z"
+    },
+    {
+      "callSign": "H3XD",
+      "name": "TRANS FUTURE 3",
+      "imo": "9227613",
+      "mmsi": "356948000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-05-19T12:13:07.618Z"
+    },
+    {
+      "callSign": "3EJS7",
+      "name": "LUNA SPIRIT",
+      "imo": "9372315",
+      "mmsi": "372610000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-05-19T12:13:12.642Z"
     }
   ]
 }
