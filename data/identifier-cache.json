@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-19T12:13:12.642Z",
+  "updatedAt": "2026-05-21T12:16:46.627Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -127,6 +127,14 @@
       "mmsi": "372610000",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-05-19T12:13:12.642Z"
+    },
+    {
+      "callSign": "C6WY5",
+      "name": "SERENITY HIGHWAY",
+      "imo": "9391579",
+      "mmsi": "311002800",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-05-21T12:16:46.627Z"
     }
   ]
 }
