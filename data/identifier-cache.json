@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-21T12:16:46.627Z",
+  "updatedAt": "2026-05-22T11:47:19.327Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -135,6 +135,14 @@
       "mmsi": "311002800",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-05-21T12:16:46.627Z"
+    },
+    {
+      "callSign": "LAUI8",
+      "name": "HOEGH BOREALIS",
+      "imo": "9962689",
+      "mmsi": "259038250",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-05-22T11:47:19.327Z"
     }
   ]
 }
