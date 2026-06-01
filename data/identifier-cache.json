@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-25T12:34:19.943Z",
+  "updatedAt": "2026-06-01T15:24:25.829Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -151,6 +151,14 @@
       "mmsi": "636015173",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-05-25T12:34:19.943Z"
+    },
+    {
+      "callSign": "D5AG5",
+      "name": "POSITIVE CHALLEN",
+      "imo": "9542295",
+      "mmsi": "636015370",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-06-01T15:24:25.829Z"
     }
   ]
 }
