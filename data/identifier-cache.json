@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-01T15:24:25.829Z",
+  "updatedAt": "2026-06-15T15:17:43.487Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -159,6 +159,14 @@
       "mmsi": "636015370",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-06-01T15:24:25.829Z"
+    },
+    {
+      "callSign": "3ELH2",
+      "name": "ANDROMEDA SPIRIT",
+      "imo": "9372327",
+      "mmsi": "372945000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-06-15T15:17:43.487Z"
     }
   ]
 }
