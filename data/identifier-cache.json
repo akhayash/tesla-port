@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-15T15:17:43.487Z",
+  "updatedAt": "2026-06-29T13:09:09.230Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -167,6 +167,22 @@
       "mmsi": "372945000",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-06-15T15:17:43.487Z"
+    },
+    {
+      "callSign": "H9LA",
+      "name": "NEW CENTURY 1",
+      "imo": "9229398",
+      "mmsi": "355234000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-06-29T13:09:04.210Z"
+    },
+    {
+      "callSign": "7JZX",
+      "name": "MERCURY LEADER",
+      "imo": "9392353",
+      "mmsi": "431432000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-06-29T13:09:09.230Z"
     }
   ]
 }
