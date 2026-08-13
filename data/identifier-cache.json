@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-10T10:18:43.095Z",
+  "updatedAt": "2026-08-13T10:09:31.393Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -215,6 +215,22 @@
       "mmsi": "311000705",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-08-10T10:18:43.095Z"
+    },
+    {
+      "callSign": "3FDE9",
+      "name": "TRANS FUTURE 2",
+      "imo": "9196400",
+      "mmsi": "357217000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-08-13T10:09:26.376Z"
+    },
+    {
+      "callSign": "3ECJ7",
+      "name": "TRANS HARMONY 2",
+      "imo": "9788851",
+      "mmsi": "352409000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-08-13T10:09:31.393Z"
     }
   ]
 }
