@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-13T10:09:31.393Z",
+  "updatedAt": "2026-08-14T10:05:17.471Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -231,6 +231,14 @@
       "mmsi": "352409000",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-08-13T10:09:31.393Z"
+    },
+    {
+      "callSign": "BUDH",
+      "name": "CHANG DA LONG",
+      "imo": "9471197",
+      "mmsi": "413473010",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-08-14T10:05:17.471Z"
     }
   ]
 }
