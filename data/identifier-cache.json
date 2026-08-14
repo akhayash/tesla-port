@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-14T10:05:17.471Z",
+  "updatedAt": "2026-08-14T21:28:13.280Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -239,6 +239,14 @@
       "mmsi": "413473010",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-08-14T10:05:17.471Z"
+    },
+    {
+      "callSign": "LATM8",
+      "name": "SALOME",
+      "imo": "9515412",
+      "mmsi": "257242000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-08-14T21:28:13.280Z"
     }
   ]
 }
