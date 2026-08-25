@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-14T21:28:13.280Z",
+  "updatedAt": "2026-08-25T09:37:37.777Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -247,6 +247,14 @@
       "mmsi": "257242000",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-08-14T21:28:13.280Z"
+    },
+    {
+      "callSign": "H3YB",
+      "name": "POSITIVE PIONEER",
+      "imo": "9304514",
+      "mmsi": "352824000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-08-25T09:37:37.777Z"
     }
   ]
 }
