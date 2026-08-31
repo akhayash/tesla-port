@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-25T09:37:37.777Z",
+  "updatedAt": "2026-08-31T16:51:09.512Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -255,6 +255,14 @@
       "mmsi": "352824000",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-08-25T09:37:37.777Z"
+    },
+    {
+      "callSign": "7KPJ",
+      "name": "DIONE LEADER",
+      "imo": "9561954",
+      "mmsi": "431172000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-08-31T16:51:09.512Z"
     }
   ]
 }
