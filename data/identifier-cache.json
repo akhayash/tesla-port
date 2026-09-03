@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-31T16:51:09.512Z",
+  "updatedAt": "2026-09-03T13:21:49.551Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -263,6 +263,14 @@
       "mmsi": "431172000",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-08-31T16:51:09.512Z"
+    },
+    {
+      "callSign": "9HA4366",
+      "name": "TORTUGAS",
+      "imo": "9319765",
+      "mmsi": "249757000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-09-03T13:21:49.551Z"
     }
   ]
 }
