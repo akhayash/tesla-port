@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-03T13:21:49.551Z",
+  "updatedAt": "2026-09-30T15:43:38.249Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -271,6 +271,14 @@
       "mmsi": "249757000",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-09-03T13:21:49.551Z"
+    },
+    {
+      "callSign": "IBJT",
+      "name": "GRANDE EGITTO",
+      "imo": "9992646",
+      "mmsi": "247417400",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-09-30T15:43:38.249Z"
     }
   ]
 }
