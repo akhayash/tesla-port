@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-30T15:43:38.249Z",
+  "updatedAt": "2026-10-06T01:41:48.922Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -279,6 +279,14 @@
       "mmsi": "247417400",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-09-30T15:43:38.249Z"
+    },
+    {
+      "callSign": "3EMP4",
+      "name": "POLARIS HIGHWAY",
+      "imo": "9728095",
+      "mmsi": "356874000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-10-06T01:41:48.922Z"
     }
   ]
 }
