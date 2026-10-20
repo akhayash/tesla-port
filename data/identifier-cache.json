@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-16T13:48:19.067Z",
+  "updatedAt": "2026-10-20T14:10:30.393Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -295,6 +295,14 @@
       "mmsi": "371715000",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-10-16T13:48:19.067Z"
+    },
+    {
+      "callSign": "7KJC",
+      "name": "MONOCEROS LEADER",
+      "imo": "9832573",
+      "mmsi": "431640000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-10-20T14:10:30.393Z"
     }
   ]
 }
