@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-20T14:10:30.393Z",
+  "updatedAt": "2026-10-21T14:23:10.981Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -303,6 +303,14 @@
       "mmsi": "431640000",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-10-20T14:10:30.393Z"
+    },
+    {
+      "callSign": "3EQO8",
+      "name": "COLUMBIA HIGHWAY",
+      "imo": "9442873",
+      "mmsi": "371172000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-10-21T14:23:10.981Z"
     }
   ]
 }
