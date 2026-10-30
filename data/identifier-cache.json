@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-21T14:23:10.981Z",
+  "updatedAt": "2026-10-30T15:41:14.292Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -311,6 +311,14 @@
       "mmsi": "371172000",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-10-21T14:23:10.981Z"
+    },
+    {
+      "callSign": "3EDQ6",
+      "name": "GUANGZHOU HIGHWA",
+      "imo": "9294367",
+      "mmsi": "371697000",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-10-30T15:41:14.292Z"
     }
   ]
 }
