@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-30T15:41:14.292Z",
+  "updatedAt": "2026-11-20T02:07:39.989Z",
   "ships": [
     {
       "callSign": "H8WC",
@@ -319,6 +319,14 @@
       "mmsi": "371697000",
       "source": "vesselfinder-scrape",
       "updatedAt": "2026-10-30T15:41:14.292Z"
+    },
+    {
+      "callSign": "V7FX5",
+      "name": "VIKING MEDITERRA",
+      "imo": "9451006",
+      "mmsi": "538007768",
+      "source": "vesselfinder-scrape",
+      "updatedAt": "2026-11-20T02:07:39.989Z"
     }
   ]
 }
